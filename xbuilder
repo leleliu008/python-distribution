@@ -1007,7 +1007,9 @@ sed -i "/^_testinternalcapi/d"     Modules/Setup.local
 unset PYTHONHOME
 unset PYTHONPATH
 
-export LDFLAGS="$LDFLAGS -static"
+if [ "$NATIVE_OS_KIND" != darwin ] ; then
+    export LDFLAGS="$LDFLAGS -static"
+fi
 
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
