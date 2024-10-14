@@ -1054,7 +1054,7 @@ package_info_pkgconf() {
 
 help() {
     printf '%b\n' "\
-${COLOR_GREEN}A package builder to build non-relocatable packages such as automake, autoconf, libtool, ruby, perl, python3, etc.${COLOR_OFF}
+${COLOR_GREEN}A package builder to build python3.${COLOR_OFF}
 
 ${COLOR_GREEN}xbuilder --help${COLOR_OFF}
 ${COLOR_GREEN}xbuilder -h${COLOR_OFF}
@@ -1067,9 +1067,7 @@ ${COLOR_GREEN}xbuilder -V${COLOR_OFF}
 ${COLOR_GREEN}xbuilder ls-available [-v]${COLOR_OFF}
     install the available packages.
 
-${COLOR_GREEN}xbuilder install <PACKAGE-NAME>... [OPTIONS]${COLOR_OFF}
-    install the specified packages.
-
+${COLOR_GREEN}xbuilder install [OPTIONS]${COLOR_OFF}
     Influential environment variables: TAR, CMAKE, GMAKE, CC, CXX, AS, LD, AR, RANLIB, CFLAGS, CXXFLAGS, CPPFLAGS, LDFLAGS
 
     OPTIONS:
@@ -1136,7 +1134,7 @@ ${COLOR_GREEN}xbuilder install <PACKAGE-NAME>... [OPTIONS]${COLOR_OFF}
 "
 }
 
-XBUILDER_VERSION=3.0.0
+XBUILDER_VERSION=1.0.0
 
 case $1 in
     ''|--help|-h)
@@ -1146,7 +1144,7 @@ case $1 in
         printf '%s\n' "$XBUILDER_VERSION"
         ;;
     ls-available)
-        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libexpat libgdbm libuuid libffi perl python3 libtool autoconf automake pkgconf gmake gm4'
+        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libexpat libgdbm libuuid libedit libffi perl python3 libtool autoconf automake pkgconf gmake gm4'
 
         if [ "$2" = -v ] ; then
             for PACKAGE_NAME in $PACKAGE_NAMES
