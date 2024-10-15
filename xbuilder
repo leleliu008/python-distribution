@@ -1001,7 +1001,7 @@ package_info_autoconf() {
 package_info_automake() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz'
     PACKAGE_SRC_SHA='f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469'
-    PACKAGE_DEP_PKG='perl gm4 autoconf'
+    PACKAGE_DEP_PKG='autoconf'
     PACKAGE_INSTALL='configure'
 }
 
@@ -1009,6 +1009,7 @@ package_info_libtool() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.xz'
     PACKAGE_SRC_SHA='4f7f217f057ce655ff22559ad221a0fd8ef84ad1fc5fcb6990cecc333aa1635d'
     PACKAGE_INSTALL='configure --enable-ltdl-install'
+    PACKAGE_DEP_PKG='gm4'
     PACKAGE_DOTWEAK='
 run ln -s libtool    bin/glibtool
 run ln -s libtoolize bin/glibtoolize
