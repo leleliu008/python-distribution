@@ -481,11 +481,11 @@ inspect_install_arguments() {
         LD_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_PLATFORM_VERS -arch $NATIVE_PLATFORM_ARCH"
     else
         [ -z "$CC" ] && {
-             CC="$(command -v cc  || command -v clang   || command -v gcc)" || abort 1 "C Compiler not found."
+             CC="$(command -v gcc || command -v clang   || command -v cc)"  || abort 1 "C Compiler not found."
         }
 
         [ -z "$CXX" ] && {
-            CXX="$(command -v c++ || command -v clang++ || command -v g++)" || abort 1 "C++ Compiler not found."
+            CXX="$(command -v g++ || command -v clang++ || command -v c++)" || abort 1 "C++ Compiler not found."
         }
 
         [ -z "$AS" ] && {
@@ -902,6 +902,7 @@ package_info_libtirpc() {
     PACKAGE_SRC_URL='https://downloads.sourceforge.net/project/libtirpc/libtirpc/1.3.5/libtirpc-1.3.5.tar.bz2'
     PACKAGE_SRC_SHA='9b31370e5a38d3391bf37edfa22498e28fe2142467ae6be7a17c9068ec0bf12f'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
+    PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INCLUDE_DIR/sys/queue.h"'
 }
 
 package_info_libnsl() {
