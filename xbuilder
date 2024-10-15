@@ -930,6 +930,29 @@ export LDCONFIG=true'
         --disable-assertions \
         --disable-gnat-projects \
         --disable-echo'
+    PACKAGE_DOTWEAK='
+for f in curses.h ncurses.h form.h menu.h panel.h term.h termcap.h
+do
+    ln -s "ncursesw/$f" "include/$f"
+done
+
+STATIC_LIBRARY_SUFFIX=.a
+
+if [ "$NATIVE_OS_KIND" = darwin ] ; then
+    SHARED_LIBRARY_SUFFIX=.dylib
+else
+    SHARED_LIBRARY_SUFFIX=.so
+fi
+
+for item in libncurses libpanel libmenu libform
+do
+    ln -s "${item}w$STATIC_LIBRARY_SUFFIX" "lib/${item}$STATIC_LIBRARY_SUFFIX"
+    ln -s "${item}w$SHARED_LIBRARY_SUFFIX" "lib/${item}$SHARED_LIBRARY_SUFFIX"
+done
+
+ln -s libncurses++w.a lib/libncurses++.a
+
+ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
 }
 
 package_info_libedit() {
