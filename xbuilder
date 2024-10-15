@@ -427,19 +427,19 @@ inspect_install_arguments() {
 
     #########################################################################################
 
-    NATIVE_OS_KIND="$(uname -s | tr A-Z a-z)"
-    NATIVE_OS_ARCH="$(uname -m)"
+    NATIVE_PLATFORM_KIND="$(uname -s | tr A-Z a-z)"
+    NATIVE_PLATFORM_ARCH="$(uname -m)"
 
     #########################################################################################
 
     if [ -z "$BUILD_NJOBS" ] ; then
-        if [ "$NATIVE_OS_KIND" = 'darwin' ] ; then
-            NATIVE_OS_NCPU="$(sysctl -n machdep.cpu.thread_count)"
+        if [ "$NATIVE_PLATFORM_KIND" = 'darwin' ] ; then
+            NATIVE_PLATFORM_NCPU="$(sysctl -n machdep.cpu.thread_count)"
         else
-            NATIVE_OS_NCPU="$(nproc)"
+            NATIVE_PLATFORM_NCPU="$(nproc)"
         fi
 
-        BUILD_NJOBS="$NATIVE_OS_NCPU"
+        BUILD_NJOBS="$NATIVE_PLATFORM_NCPU"
     fi
 
     #########################################################################################
@@ -465,7 +465,7 @@ inspect_install_arguments() {
     unset PP_ARGS
     unset LD_ARGS
 
-    if [ "$NATIVE_OS_KIND" = 'darwin' ] ; then
+    if [ "$NATIVE_PLATFORM_KIND" = 'darwin' ] ; then
         [ -z "$CC"      ] &&      CC="$(xcrun --sdk macosx --find clang)"
         [ -z "$CXX"     ] &&     CXX="$(xcrun --sdk macosx --find clang++)"
         [ -z "$AS"      ] &&      AS="$(xcrun --sdk macosx --find as)"
@@ -474,11 +474,11 @@ inspect_install_arguments() {
         [ -z "$RANLIB"  ] &&  RANLIB="$(xcrun --sdk macosx --find ranlib)"
         [ -z "$SYSROOT" ] && SYSROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
-        NATIVE_OS_VERS="$(sw_vers -productVersion)"
+        NATIVE_PLATFORM_VERS="$(sw_vers -productVersion)"
 
-        CC_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_OS_VERS -arch $NATIVE_OS_ARCH -Qunused-arguments"
+        CC_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_PLATFORM_VERS -arch $NATIVE_PLATFORM_ARCH -Qunused-arguments"
         PP_ARGS="-isysroot $SYSROOT -Qunused-arguments"
-        LD_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_OS_VERS -arch $NATIVE_OS_ARCH"
+        LD_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_PLATFORM_VERS -arch $NATIVE_PLATFORM_ARCH"
     else
         [ -z "$CC" ] && {
              CC="$(command -v cc  || command -v clang   || command -v gcc)" || abort 1 "C Compiler not found."
@@ -530,14 +530,14 @@ inspect_install_arguments() {
                 LD_ARGS="$LD_ARGS -flto"
             fi
 
-            if [ "$NATIVE_OS_KIND" = darwin ] ; then
+            if [ "$NATIVE_PLATFORM_KIND" = darwin ] ; then
                 LD_ARGS="$LD_ARGS -Wl,-S"
             else
                 LD_ARGS="$LD_ARGS -Wl,-s"
             fi
     esac
 
-    case $NATIVE_OS_KIND in
+    case $NATIVE_PLATFORM_KIND in
          netbsd) LD_ARGS="$LD_ARGS -lpthread" ;;
         openbsd) LD_ARGS="$LD_ARGS -lpthread" ;;
     esac
@@ -898,6 +898,19 @@ package_info_libffi() {
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-docs --disable-symvers'
 }
 
+package_info_libtirpc() {
+    PACKAGE_SRC_URL='https://downloads.sourceforge.net/project/libtirpc/libtirpc/1.3.5/libtirpc-1.3.5.tar.bz2'
+    PACKAGE_SRC_SHA='9b31370e5a38d3391bf37edfa22498e28fe2142467ae6be7a17c9068ec0bf12f'
+    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
+}
+
+package_info_libnsl() {
+    PACKAGE_SRC_URL='https://github.com/thkukuk/libnsl/releases/download/v2.0.1/libnsl-2.0.1.tar.xz'
+    PACKAGE_SRC_SHA='5c9e470b232a7acd3433491ac5221b4832f0c71318618dc6aa04dd05ffcd8fd9'
+    PACKAGE_DEP_PKG='libtirpc'
+    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-nls'
+}
+
 package_info_libopenssl() {
     PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.3.1.tar.gz'
     PACKAGE_SRC_SHA='777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e'
@@ -938,7 +951,7 @@ done
 
 STATIC_LIBRARY_SUFFIX=.a
 
-if [ "$NATIVE_OS_KIND" = darwin ] ; then
+if [ "$NATIVE_PLATFORM_KIND" = darwin ] ; then
     SHARED_LIBRARY_SUFFIX=.dylib
 else
     SHARED_LIBRARY_SUFFIX=.so
@@ -1020,11 +1033,15 @@ package_info_python3() {
     PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz'
     PACKAGE_SRC_SHA='92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706'
     PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit libuuid'
+
+    if [ "$NATIVE_PLATFORM_KIND" = linux ] ; then
+        PACKAGE_DEP_PKG="$PACKAGE_DEP_PKG libnsl"
+    fi
+
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
     PACKAGE_DOPATCH='
 sed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
 sed -i.bak "s|shared|static|"       Modules/Setup.local
-sed -i.bak "/-ltirpc/d"             Modules/Setup.local
 sed -i.bak "/^_tkinter /d"          Modules/Setup.local
 sed -i.bak "/^_testinternalcapi/d"  Modules/Setup.local
 sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
@@ -1032,9 +1049,11 @@ sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
 unset PYTHONHOME
 unset PYTHONPATH
 
-if [ "$NATIVE_OS_KIND" != darwin ] ; then
+if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
     export LDFLAGS="$LDFLAGS -static"
 fi
+
+export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
 
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
@@ -1047,6 +1066,12 @@ export LIBLZMA_LIBS="-L$AUX_LIBRARY_DIR -llzma"
 
 export LIBSQLITE3_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBSQLITE3_LIBS="-L$AUX_LIBRARY_DIR -lsqlite3"
+
+export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
+export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+
+export LIBNSL_CFLAGS="-I$AUX_INCLUDE_DIR"
+export LIBNSL_LIBS="-L$AUX_LIBRARY_DIR -lnsl -ltirpc"
 
 export GDBM_CFLAGS="-I$AUX_INCLUDE_DIR"
 export GDBM_LIBS="-L$AUX_LIBRARY_DIR -lgdbm -lgdbm_compat"
