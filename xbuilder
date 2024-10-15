@@ -950,6 +950,7 @@ do
     ln -s "${item}w$SHARED_LIBRARY_SUFFIX" "lib/${item}$SHARED_LIBRARY_SUFFIX"
 done
 
+ln -s libncurses.a    lib/libtermcap.a
 ln -s libncurses++w.a lib/libncurses++.a
 
 ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
