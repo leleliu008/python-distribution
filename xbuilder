@@ -950,7 +950,6 @@ do
     ln -s "${item}w$SHARED_LIBRARY_SUFFIX" "lib/${item}$SHARED_LIBRARY_SUFFIX"
 done
 
-ln -s libncurses.a    lib/libtermcap.a
 ln -s libncurses++w.a lib/libncurses++.a
 
 ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
@@ -1023,11 +1022,12 @@ package_info_python3() {
     PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit libuuid'
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
     PACKAGE_DOPATCH='
-sed -n -E "s/^#([a-z_\*].*)$/\1/p" Modules/Setup > Modules/Setup.local
-sed -i "s|shared|static|"          Modules/Setup.local
-sed -i "/-ltirpc/d"                Modules/Setup.local
-sed -i "/^_tkinter /d"             Modules/Setup.local
-sed -i "/^_testinternalcapi/d"     Modules/Setup.local
+sed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
+sed -i.bak "s|shared|static|"       Modules/Setup.local
+sed -i.bak "/-ltirpc/d"             Modules/Setup.local
+sed -i.bak "/^_tkinter /d"          Modules/Setup.local
+sed -i.bak "/^_testinternalcapi/d"  Modules/Setup.local
+sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
 
 unset PYTHONHOME
 unset PYTHONPATH
