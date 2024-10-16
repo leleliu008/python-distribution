@@ -907,8 +907,7 @@ package_info_libintl() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/gettext/gettext-0.22.5.tar.gz'
     PACKAGE_SRC_SHA='ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0'
     PACKAGE_DEP_PKG='libiconv'
-    PACKAGE_DOPATCH='run cd gettext-runtime'
-    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-libasprintf --disable-nls --disable-csharp --disable-java --with-libiconv-prefix="$AUX_INSTALL_DIR"'
+    PACKAGE_INSTALL='run cd gettext-runtime && configure --disable-dependency-tracking --enable-static --disable-shared --disable-libasprintf --disable-nls --disable-csharp --disable-java --enable-c++ --with-libiconv-prefix="$AUX_INSTALL_DIR"'
 }
 
 package_info_libtirpc() {
