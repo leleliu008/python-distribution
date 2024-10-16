@@ -897,20 +897,34 @@ package_info_libffi() {
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-docs --disable-symvers'
 }
 
+package_info_libiconv() {
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libiconv/libiconv-1.17.tar.gz'
+    PACKAGE_SRC_SHA='8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313'
+    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-extra-encodings'
+}
+
+package_info_libintl() {
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/gettext/gettext-0.22.5.tar.gz'
+    PACKAGE_SRC_SHA='ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0'
+    PACKAGE_DEP_PKG='libiconv'
+    PACKAGE_DOPATCH='run cd gettext-runtime'
+    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-libasprintf --disable-nls --disable-csharp --disable-java --with-libiconv-prefix="$AUX_INSTALL_DIR"'
+}
+
 package_info_libtirpc() {
     PACKAGE_SRC_URL='https://downloads.sourceforge.net/project/libtirpc/libtirpc/1.3.5/libtirpc-1.3.5.tar.bz2'
     PACKAGE_SRC_SHA='9b31370e5a38d3391bf37edfa22498e28fe2142467ae6be7a17c9068ec0bf12f'
     PACKAGE_DEP_PKG='libz'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
     PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INCLUDE_DIR/sys/queue.h"'
+    PACKAGE_DOTWEAK='run ln -s tirpc/rpc include/rpc'
 }
 
 package_info_libnsl() {
     PACKAGE_SRC_URL='https://github.com/thkukuk/libnsl/releases/download/v2.0.1/libnsl-2.0.1.tar.xz'
     PACKAGE_SRC_SHA='5c9e470b232a7acd3433491ac5221b4832f0c71318618dc6aa04dd05ffcd8fd9'
-    PACKAGE_DEP_PKG='libtirpc'
-    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-nls'
-    PACKAGE_DOPATCH='export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"'
+    PACKAGE_DEP_PKG='libtirpc libintl'
+    PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared'
 }
 
 package_info_libopenssl() {
@@ -1054,8 +1068,6 @@ unset PYTHONPATH
 if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
     export LDFLAGS="$LDFLAGS -static"
 fi
-
-export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
 
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
