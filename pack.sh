@@ -92,6 +92,6 @@ __setup_${2%%-*}
 
 PREFIX="python-distribution-$1-$2"
 
-run ./xbuilder install --prefix="$PREFIX"
+run ./xbuilder install --prefix="$PREFIX" --static
 
 run bsdtar cvaPf "$PREFIX.tar.xz" "$PREFIX"

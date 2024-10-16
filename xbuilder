@@ -297,6 +297,8 @@ inspect_install_arguments() {
 
     unset REQUEST_TO_EXPORT_COMPILE_COMMANDS_JSON
 
+    unset REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE
+
     unset SPECIFIED_PACKAGE_LIST
 
     unset SESSION_DIR
@@ -397,6 +399,9 @@ inspect_install_arguments() {
                     /*) ;;
                     *)  PACKAGE_INSTALL_DIR="$PWD/$PACKAGE_INSTALL_DIR"
                 esac
+                ;;
+            --static)
+                REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE=1
                 ;;
             -j) shift
                 isInteger "$1" || abort 1 "-j <N>, <N> must be an integer."
@@ -1065,8 +1070,10 @@ sed -i.bak "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
 unset PYTHONHOME
 unset PYTHONPATH
 
-if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
-    export LDFLAGS="$LDFLAGS -static"
+if [ "$REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE" = 1 ] ; then
+    if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
+        export LDFLAGS="$LDFLAGS -static"
+    fi
 fi
 
 export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
