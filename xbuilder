@@ -916,13 +916,13 @@ package_info_libtirpc() {
     PACKAGE_DEP_PKG='libz'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
     PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INCLUDE_DIR/sys/queue.h"'
-    PACKAGE_DOTWEAK='run ln -s tirpc/rpc include/rpc'
 }
 
 package_info_libnsl() {
     PACKAGE_SRC_URL='https://github.com/thkukuk/libnsl/releases/download/v2.0.1/libnsl-2.0.1.tar.xz'
     PACKAGE_SRC_SHA='5c9e470b232a7acd3433491ac5221b4832f0c71318618dc6aa04dd05ffcd8fd9'
     PACKAGE_DEP_PKG='libtirpc libintl'
+    PACKAGE_DOPATCH='export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared'
 }
 
@@ -1067,6 +1067,8 @@ unset PYTHONPATH
 if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
     export LDFLAGS="$LDFLAGS -static"
 fi
+
+export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
 
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
