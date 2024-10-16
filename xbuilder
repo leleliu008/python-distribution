@@ -424,6 +424,8 @@ inspect_install_arguments() {
     #########################################################################################
 
     AUX_INSTALL_DIR="$SESSION_DIR/auxroot"
+    AUX_INCLUDE_DIR="$AUX_INSTALL_DIR/include"
+    AUX_LIBRARY_DIR="$AUX_INSTALL_DIR/lib"
 
     #########################################################################################
 
@@ -773,9 +775,6 @@ install_the_given_package() {
     #########################################################################################
 
     if [ -n "$PACKAGE_DEP_PKG" ] ; then
-        AUX_INCLUDE_DIR="$AUX_INSTALL_DIR/include"
-        AUX_LIBRARY_DIR="$AUX_INSTALL_DIR/lib"
-
         STATIC_LIBRARY_DIR="$PACKAGE_WORKING_DIR/lib"
 
         run install -d ../lib/
@@ -903,7 +902,7 @@ package_info_libtirpc() {
     PACKAGE_SRC_SHA='9b31370e5a38d3391bf37edfa22498e28fe2142467ae6be7a17c9068ec0bf12f'
     PACKAGE_DEP_PKG='libz'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
-    PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INSTALL_DIR/include/sys/queue.h"'
+    PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INCLUDE_DIR/sys/queue.h"'
 }
 
 package_info_libnsl() {
@@ -911,6 +910,7 @@ package_info_libnsl() {
     PACKAGE_SRC_SHA='5c9e470b232a7acd3433491ac5221b4832f0c71318618dc6aa04dd05ffcd8fd9'
     PACKAGE_DEP_PKG='libtirpc'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-nls'
+    PACKAGE_DOPATCH='export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"'
 }
 
 package_info_libopenssl() {
