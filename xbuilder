@@ -1074,11 +1074,13 @@ sed -i.bak "s|shared|static|"       Modules/Setup.local
 sed -i.bak "/^_tkinter /d"          Modules/Setup.local
 sed -i.bak "/^_testinternalcapi/d"  Modules/Setup.local
 sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
-sed -i.bak "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
 
 unset NATIVE_PLATFORM_KIND_DARWIN
 
 case $NATIVE_PLATFORM_KIND in
+    linux)
+        sed -i.bak "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
+        ;;
     darwin)
         NATIVE_PLATFORM_KIND_DARWIN=1
 
@@ -1087,6 +1089,16 @@ case $NATIVE_PLATFORM_KIND in
 
         sed -i.bak "/ossaudiodev/d" Modules/Setup.local
         sed -i.bak "/spwdmodule/d"  Modules/Setup.local
+        sed -i.bak "/nismodule/d"   Modules/Setup.local
+        ;;
+    openbsd)
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
+
+        sed -i.bak "/ossaudiodev/d" Modules/Setup.local
+        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
+        sed -i.bak "/nismodule/d"   Modules/Setup.local
+        sed -i.bak "s/-luuid//"     Modules/Setup.local
         ;;
     *bsd)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
