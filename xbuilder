@@ -1075,11 +1075,23 @@ sed -i.bak "/^_testinternalcapi/d"  Modules/Setup.local
 sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
 sed -i.bak "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
 
+unset NATIVE_PLATFORM_KIND_DARWIN
+
+case $NATIVE_PLATFORM_KIND in
+    darwin)
+        NATIVE_PLATFORM_KIND_DARWIN=1
+        sed -i.bak "/ossaudiodev/d" Modules/Setup.local
+        ;;
+    *bsd)
+        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
+        ;;
+esac
+
 unset PYTHONHOME
 unset PYTHONPATH
 
 if [ "$REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE" = 1 ] ; then
-    if [ "$NATIVE_PLATFORM_KIND" != darwin ] ; then
+    if [ "$NATIVE_PLATFORM_KIND_DARWIN" != 1 ] ; then
         export LDFLAGS="$LDFLAGS -static"
     fi
 fi
