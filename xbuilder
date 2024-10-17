@@ -1083,11 +1083,15 @@ case $NATIVE_PLATFORM_KIND in
         NATIVE_PLATFORM_KIND_DARWIN=1
 
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
 
         sed -i.bak "/ossaudiodev/d" Modules/Setup.local
         sed -i.bak "/spwdmodule/d"  Modules/Setup.local
         ;;
     *bsd)
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
+
         sed -i.bak "/spwdmodule/d"  Modules/Setup.local
         sed -i.bak "/nismodule/d"   Modules/Setup.local
         sed -i.bak "s/-luuid//"     Modules/Setup.local
