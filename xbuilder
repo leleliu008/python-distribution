@@ -1093,6 +1093,8 @@ case $NATIVE_PLATFORM_KIND in
         ;;
     openbsd)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
 
         sed -i.bak "/ossaudiodev/d" Modules/Setup.local
