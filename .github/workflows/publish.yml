@@ -176,7 +176,8 @@ jobs:
 
   linux-glibc:
     needs: check
-    if: needs.check.outputs.if-new-release == 'yes'
+      #if: needs.check.outputs.if-new-release == 'yes'
+    if: false
 
     strategy:
       fail-fast: false
@@ -222,7 +223,8 @@ jobs:
 
   linux-musl:
     needs: check
-    if: needs.check.outputs.if-new-release == 'yes'
+      #if: needs.check.outputs.if-new-release == 'yes'
+    if: false
 
     strategy:
       fail-fast: false
@@ -267,7 +269,7 @@ jobs:
 
 
   publish:
-    needs: [check, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-glibc, linux-musl]
+    needs: [check, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64]
     if: needs.check.outputs.if-new-release == 'yes'
 
     runs-on: ubuntu-latest
