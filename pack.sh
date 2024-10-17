@@ -97,7 +97,7 @@ run ./xbuilder install --prefix="$PREFIX"
 case $2 in
     linux-glibc-*)
         run cp -L `gcc -print-file-name=libcrypt.so.1` "$PREFIX/lib/"
-        run patchelf --set-rpath "\$ORIGIN/../lib" "$PREFIX/bin/python3"
+        run patchelf --set-rpath "'\$ORIGIN/../lib'" "$PREFIX/bin/python3"
 esac
 
 run bsdtar cvaPf "$PREFIX.tar.xz" "$PREFIX"
