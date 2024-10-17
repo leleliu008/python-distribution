@@ -71,7 +71,7 @@ __setup_linux() {
     case $ID in
         ubuntu)
             run $sudo apt-get -y update
-            run $sudo apt-get -y install curl libarchive-tools cmake make g++ linux-headers-generic
+            run $sudo apt-get -y install curl libarchive-tools cmake make g++ linux-headers-generic patchelf
             run $sudo ln -sf /usr/bin/make /usr/bin/gmake
             ;;
         alpine)
@@ -93,5 +93,11 @@ __setup_${2%%-*}
 PREFIX="python-distribution-$1-$2"
 
 run ./xbuilder install --prefix="$PREFIX"
+
+case $2 in
+    linux-glibc-*)
+        run cp -L `gcc -print-file-name=libcrypt.so.1` "$PREFIX/lib/"
+        run patchelf --set-rpath "\$ORIGIN/../lib" "$PREFIX/bin/python3"
+esac
 
 run bsdtar cvaPf "$PREFIX.tar.xz" "$PREFIX"

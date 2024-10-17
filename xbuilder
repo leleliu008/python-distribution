@@ -481,11 +481,11 @@ inspect_install_arguments() {
         [ -z "$RANLIB"  ] &&  RANLIB="$(xcrun --sdk macosx --find ranlib)"
         [ -z "$SYSROOT" ] && SYSROOT="$(xcrun --sdk macosx --show-sdk-path)"
 
-        NATIVE_PLATFORM_VERS="$(sw_vers -productVersion)"
+        [ -z "$MACOSX_DEPLOYMENT_TARGET" ] && MACOSX_DEPLOYMENT_TARGET="$(sw_vers -productVersion)"
 
-        CC_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_PLATFORM_VERS -arch $NATIVE_PLATFORM_ARCH -Qunused-arguments"
+        CC_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -arch $NATIVE_PLATFORM_ARCH -Qunused-arguments"
         PP_ARGS="-isysroot $SYSROOT -Qunused-arguments"
-        LD_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$NATIVE_PLATFORM_VERS -arch $NATIVE_PLATFORM_ARCH"
+        LD_ARGS="-isysroot $SYSROOT -mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET -arch $NATIVE_PLATFORM_ARCH"
     else
         [ -z "$CC" ] && {
              CC="$(command -v gcc || command -v clang   || command -v cc)"  || abort 1 "C Compiler not found."
@@ -1014,6 +1014,14 @@ package_info_libuuid() {
         --disable-runuser \
         --disable-makeinstall-chown \
         --disable-makeinstall-setuid'
+
+    if [ "$NATIVE_PLATFORM_KIND" = darwin ] ; then
+        PACKAGE_DOPATCH='
+        wfetch 'https://github.com/util-linux/util-linux/commit/9445f477cfcfb3615ffde8f93b1b98c809ee4eca.patch?full_index=1' -o patch.diff
+        patch -p1 < patch.diff
+        '
+    fi
+
     PACKAGE_DOTWEAK='run ln -s uuid/uuid.h include/uuid.h'
 }
 
