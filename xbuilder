@@ -1130,7 +1130,7 @@ case $1 in
         printf '%s\n' "$XBUILDER_VERSION"
         ;;
     ls-available)
-        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libexpat libgdbm libuuid libedit libffi perl python3 libtool autoconf automake pkgconf gmake gm4'
+        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libxcrypt libexpat libgdbm libuuid libedit libffi perl python3'
 
         if [ "$2" = -v ] ; then
             for PACKAGE_NAME in $PACKAGE_NAMES
