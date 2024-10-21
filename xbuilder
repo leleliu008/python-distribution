@@ -439,6 +439,10 @@ inspect_install_arguments() {
 
     #########################################################################################
 
+    if [ -z "$TAR" ] ; then
+        TAR="$(command -v bsdtar || command -v gtar || command -v tar)" || abort 1 "none of bsdtar, gtar, tar command was found."
+    fi
+
     if [ -z "$GMAKE" ] ; then
         GMAKE="$(command -v gmake || command -v make)" || abort 1 "command not found: gmake"
     fi
@@ -653,10 +657,6 @@ install_the_given_package() {
     run cd         "$PACKAGE_WORKING_DIR/src"
 
     #########################################################################################
-
-    if [ -z "$TAR" ] ; then
-        TAR="$(command -v bsdtar || command -v gtar || command -v tar)" || abort 1 "none of bsdtar, gtar, tar command was found."
-    fi
 
     run "$TAR" xf "$PACKAGE_SRC_FILEPATH" --strip-components=1 --no-same-owner
 
