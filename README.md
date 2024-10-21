@@ -1,2 +1,2 @@
 # python-distribution
-A self-contained CPython distribution
+A self-contained and relocatable CPython distribution
