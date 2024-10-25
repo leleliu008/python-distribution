@@ -816,7 +816,7 @@ package_info_libopenssl() {
     # https://github.com/openssl/openssl/blob/master/INSTALL.md
 }
 
-package_info_ncurses() {
+package_info_libncurses() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/ncurses/ncurses-6.5.tar.gz'
     PACKAGE_SRC_SHA='136d91bc269a9a5785e5f9e980bc76ab57428f604ce3e5a5a90cebc767971cc6'
     PACKAGE_DOPATCH='
@@ -859,7 +859,7 @@ ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
 package_info_libedit() {
     PACKAGE_SRC_URL='https://thrysoee.dk/editline/libedit-20240808-3.1.tar.gz'
     PACKAGE_SRC_SHA='5f0573349d77c4a48967191cdd6634dd7aa5f6398c6a57fe037cc02696d6099f'
-    PACKAGE_DEP_PKG='ncurses'
+    PACKAGE_DEP_PKG='libncurses'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-examples'
     PACKAGE_DOTWEAK='run ln -s libedit.a lib/libreadline.a'
 }
@@ -1137,7 +1137,7 @@ case $1 in
         printf '%s\n' "$XBUILDER_VERSION"
         ;;
     ls-available)
-        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libxcrypt libexpat libgdbm libuuid libedit libffi perl python3'
+        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libxcrypt libexpat libgdbm libuuid libncurses libedit libffi libnsl libtirpc libintl python3'
 
         if [ "$2" = -v ] ; then
             for PACKAGE_NAME in $PACKAGE_NAMES
