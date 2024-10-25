@@ -969,6 +969,13 @@ case $NATIVE_PLATFORM_KIND in
         sed -i.bak "/spwdmodule/d"  Modules/Setup.local
         sed -i.bak "/nismodule/d"   Modules/Setup.local
         ;;
+    dragonfly)
+        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
+
+        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
+        sed -i.bak "/nismodule/d"   Modules/Setup.local
+        sed -i.bak "s/-luuid//"     Modules/Setup.local
+        ;;
     openbsd)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
