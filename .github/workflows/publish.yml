@@ -114,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: cross-platform-actions/master
+      - uses: cross-platform-actions/action@master
         with:
           operating_system: openbsd
           version: ${{ matrix.target-version }}
