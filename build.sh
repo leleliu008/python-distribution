@@ -50,13 +50,13 @@ success() {
 }
 
 error() {
-    printf '%b\n' "${COLOR_RED}💔  xbuilder: $*${COLOR_OFF}" >&2
+    printf '%b\n' "${COLOR_RED}💔  $ARG0: $*${COLOR_OFF}" >&2
 }
 
 abort() {
     EXIT_STATUS_CODE="$1"
     shift
-    printf '%b\n' "${COLOR_RED}💔  xbuilder: $*${COLOR_OFF}" >&2
+    printf '%b\n' "${COLOR_RED}💔  $ARG0: $*${COLOR_OFF}" >&2
     exit "$EXIT_STATUS_CODE"
 }
 
@@ -401,7 +401,7 @@ inspect_install_arguments() {
 
     : ${SESSION_DIR:="$HOME/.xbuilder/run/$$"}
     : ${DOWNLOAD_DIR:="$HOME/.xbuilder/downloads"}
-    : ${PACKAGE_INSTALL_DIR:="$HOME/.xbuilder/installed"}
+    : ${PACKAGE_INSTALL_DIR:="$HOME/.xbuilder/installed/python3"}
 
     #########################################################################################
 
@@ -622,7 +622,7 @@ install_the_given_package() {
 
     #########################################################################################
 
-    printf '\n%b\n' "${COLOR_PURPLE}=>> xbuilder: install package : $1${COLOR_OFF}"
+    printf '\n%b\n' "${COLOR_PURPLE}=>> $ARG0: install package : $1${COLOR_OFF}"
 
     #########################################################################################
 
@@ -705,7 +705,6 @@ src-sha: $PACKAGE_SRC_SHA
 dep-pkg: $PACKAGE_DEP_PKG
 install: $PACKAGE_INSTALL
 builtat: $PACKAGE_INSTALL_UTS
-builtby: xbuilder-$XBUILDER_VERSION
 EOF
 
     cat > toolchain.txt <<EOF
@@ -1056,23 +1055,26 @@ package_info_pkgconf() {
     PACKAGE_DOTWEAK='run ln -s pkgconf bin/pkg-config'
 }
 
+package_info_gsed() {
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz'
+    PACKAGE_SRC_SHA='6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181'
+    PACKAGE_INSTALL='configure --program-prefix=g --with-included-regex --without-selinux --disable-acl --disable-assert'
+}
+
+
 
 help() {
     printf '%b\n' "\
-${COLOR_GREEN}A package builder to build python3${COLOR_OFF}
+${COLOR_GREEN}A self-contained and relocatable CPython distribution builder${COLOR_OFF}
 
-${COLOR_GREEN}xbuilder --help${COLOR_OFF}
-${COLOR_GREEN}xbuilder -h${COLOR_OFF}
+${COLOR_GREEN}$ARG0 --help${COLOR_OFF}
+${COLOR_GREEN}$ARG0 -h${COLOR_OFF}
     show help of this command.
 
-${COLOR_GREEN}xbuilder --version${COLOR_OFF}
-${COLOR_GREEN}xbuilder -V${COLOR_OFF}
-    show version of this command.
+${COLOR_GREEN}$ARG0 config [-v]${COLOR_OFF}
+    show config.
 
-${COLOR_GREEN}xbuilder ls-available [-v]${COLOR_OFF}
-    install the available packages.
-
-${COLOR_GREEN}xbuilder install [OPTIONS]${COLOR_OFF}
+${COLOR_GREEN}$ARG0 install [OPTIONS]${COLOR_OFF}
     Influential environment variables: TAR, GMAKE, CC, CXX, AS, LD, AR, RANLIB, CFLAGS, CXXFLAGS, CPPFLAGS, LDFLAGS
 
     OPTIONS:
@@ -1084,6 +1086,19 @@ ${COLOR_GREEN}xbuilder install [OPTIONS]${COLOR_OFF}
 
         ${COLOR_BLUE}--download-dir=<DIR>${COLOR_OFF}
             specify the download directory.
+
+        ${COLOR_BLUE}--profile=<debug|release>${COLOR_OFF}
+            specify the build profile.
+
+            debug:
+                  CFLAGS: -O0 -g
+                CXXFLAGS: -O0 -g
+
+            release:
+                  CFLAGS: -Os
+                CXXFLAGS: -Os
+                CPPFLAGS: -DNDEBUG
+                 LDFLAGS: -flto -Wl,-s
 
         ${COLOR_BLUE}-j <N>${COLOR_OFF}
             specify the number of jobs you can run in parallel.
@@ -1127,48 +1142,78 @@ ${COLOR_GREEN}xbuilder install [OPTIONS]${COLOR_OFF}
 "
 }
 
-XBUILDER_VERSION=2.0.0
+show_config() {
+    unset PACKAGE_SRC_URL
+    unset PACKAGE_SRC_URI
+    unset PACKAGE_SRC_SHA
+    unset PACKAGE_DEP_PKG
+    unset PACKAGE_DOPATCH
+    unset PACKAGE_INSTALL
+    unset PACKAGE_DOTWEAK
+
+    package_info_$1
+
+    cat <<EOF
+$1:
+    src-url: $PACKAGE_SRC_URL
+    src-sha: $PACKAGE_SRC_SHA
+
+EOF
+
+    for DEP_PKG_NAME in $PACKAGE_DEP_PKG
+    do
+        (show_config "$DEP_PKG_NAME")
+    done
+}
+
+ARG0="$0"
 
 case $1 in
     ''|--help|-h)
         help
         ;;
-    --version|-V)
-        printf '%s\n' "$XBUILDER_VERSION"
-        ;;
-    ls-available)
-        PACKAGE_NAMES='libz libbz2 liblzma libsqlite3 libopenssl libxcrypt libexpat libgdbm libuuid libncurses libedit libffi libnsl libtirpc libintl python3'
-
-        if [ "$2" = -v ] ; then
-            for PACKAGE_NAME in $PACKAGE_NAMES
-            do
-                unset PACKAGE_SRC_URL
-                unset PACKAGE_SRC_URI
-                unset PACKAGE_SRC_SHA
-                unset PACKAGE_DEP_PKG
-                unset PACKAGE_DOPATCH
-                unset PACKAGE_INSTALL
-                unset PACKAGE_DOTWEAK
-
-                package_info_$PACKAGE_NAME
-
-                cat <<EOF
-$PACKAGE_NAME:
-    src-url: $PACKAGE_SRC_URL
-    src-sha: $PACKAGE_SRC_SHA
-
-EOF
-            done
-        else
-            printf '%s\n' $PACKAGE_NAMES
-        fi
+    config)
+        show_config python3
         ;;
     install)
         shift
 
         inspect_install_arguments "$@"
 
-        install_the_given_package python3
+        ######################################################
+
+        run install -d "$AUX_INSTALL_DIR/bin"
+        run cd         "$AUX_INSTALL_DIR/bin"
+
+        wfetch 'https://raw.githubusercontent.com/vim/vim/master/src/xxd/xxd.c'
+        run "$CC" "$CFLAGS" "$CPPFLAGS" -DUNIX "$LDFLAGS" -o xxd xxd.c
+
+        ######################################################
+
+        (install_the_given_package gsed)
+         install_the_given_package python3
+
+        ######################################################
+
+        for f in bin/*
+        do
+            X="$(xxd -u -p -l 2 "$f")"
+
+            if [ "$X" = 2321 ] ; then
+                Y="$(gsed -n 1p "$f")"
+
+                case "$Y" in
+                    */bin/python3*)
+                        gsed -i '1c #!/usr/bin/env python3' "$f"
+                esac
+            fi
+        done
+
+        ######################################################
+
+        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." lib/pkgconfig/*.pc
+
+        ######################################################
 
         if [ "$REQUEST_TO_KEEP_SESSION_DIR" != 1 ] ; then
             rm -rf "$SESSION_DIR"
