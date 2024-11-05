@@ -1071,7 +1071,7 @@ ${COLOR_GREEN}$ARG0 --help${COLOR_OFF}
 ${COLOR_GREEN}$ARG0 -h${COLOR_OFF}
     show help of this command.
 
-${COLOR_GREEN}$ARG0 config [-v]${COLOR_OFF}
+${COLOR_GREEN}$ARG0 config${COLOR_OFF}
     show config.
 
 ${COLOR_GREEN}$ARG0 install [OPTIONS]${COLOR_OFF}
