@@ -67,8 +67,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
-          path: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
+          name: python-distribution-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
+          path: python-distribution-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
 
 
 
