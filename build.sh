@@ -313,6 +313,10 @@ inspect_install_arguments() {
     unset DEBUG_CC
     unset DEBUG_LD
 
+    REQUEST_TO_BUILD_PYTHON_VERSION="$1"
+
+    shift
+
     while [ -n "$1" ]
     do
         case $1 in
@@ -935,8 +939,30 @@ package_info_libxcrypt() {
 }
 
 package_info_python3() {
-    PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz'
-    PACKAGE_SRC_SHA='92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706'
+    case $REQUEST_TO_BUILD_PYTHON_VERSION in
+        3.9)
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.9.20/Python-3.9.20.tgz'
+            PACKAGE_SRC_SHA='6b281279efd85294d2d6993e173983a57464c0133956fbbb5536ec9646beaf0c'
+            ;;
+        3.10)
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.10.15/Python-3.10.15.tgz'
+            PACKAGE_SRC_SHA='a27864e5ba2a4474f8f6c58ab92ff52767ac8b66f1646923355a53fe3ef15074'
+            ;;
+        3.11)
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz'
+            PACKAGE_SRC_SHA='92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706'
+            ;;
+        3.12)
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz'
+            PACKAGE_SRC_SHA='73ac8fe780227bf371add8373c3079f42a0dc62deff8d612cd15a618082ab623'
+            ;;
+        3.13)
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz'
+            PACKAGE_SRC_SHA='12445c7b3db3126c41190bfdc1c8239c39c719404e844babbd015a1bc3fafcd4'
+            ;;
+        *)  abort 1 "unsupported python version: $REQUEST_TO_BUILD_PYTHON_VERSION"
+    esac
+
     PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
 
     case $NATIVE_PLATFORM_KIND in
@@ -1074,8 +1100,10 @@ ${COLOR_GREEN}$ARG0 -h${COLOR_OFF}
 ${COLOR_GREEN}$ARG0 config${COLOR_OFF}
     show config.
 
-${COLOR_GREEN}$ARG0 install [OPTIONS]${COLOR_OFF}
+${COLOR_GREEN}$ARG0 install <PYTHON-VERSION> [OPTIONS]${COLOR_OFF}
     Influential environment variables: TAR, GMAKE, CC, CXX, AS, LD, AR, RANLIB, CFLAGS, CXXFLAGS, CPPFLAGS, LDFLAGS
+
+    PYTHON-VERSION: 3.9, 3.10, 3.11, 3.12, 3.13
 
     OPTIONS:
         ${COLOR_BLUE}--prefix=<DIR>${COLOR_OFF}
@@ -1173,6 +1201,7 @@ case $1 in
         help
         ;;
     config)
+        REQUEST_TO_BUILD_PYTHON_VERSION='3.11'
         show_config python3
         ;;
     install)

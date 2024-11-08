@@ -90,13 +90,13 @@ unset sudo
 
 [ "$(id -u)" -eq 0 ] || sudo=sudo
 
-__setup_${2%%-*}
+__setup_${3%%-*}
 
 [ -f cacert.pem ] && run export SSL_CERT_FILE="$PWD/cacert.pem"
 
-PREFIX="python-distribution-$1-$2"
+PREFIX="python-$1+$2-$3"
 
-run ./build.sh install --prefix="$PREFIX"
+run ./build.sh install "$1" --prefix="$PREFIX"
 
 run cp build.sh "$PREFIX/"
 
