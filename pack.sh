@@ -96,11 +96,13 @@ __setup_$TARGET_OS_KIND
 
 PREFIX="python-$1-$2"
 
+PYTHON_EDITION="${1%.*}"
+
 run $sudo install -d -g `id -g -n` -o `id -u -n` "$PREFIX"
 
 [ -f cacert.pem ] && run export SSL_CERT_FILE="$PWD/cacert.pem"
 
-run ./build.sh install --prefix="$PREFIX"
+run ./build.sh install "$PYTHON_EDITION" --prefix="$PREFIX"
 
 run cp build.sh pack.sh "$PREFIX/"
 
@@ -110,8 +112,6 @@ if [ "$TARGET_OS_KIND" = linux ] ; then
     run cd "$PREFIX/bin/"
 
     run install -d ../runtime/
-
-    PYTHON_EDITION="${1%.*}"
 
     run mv "python$PYTHON_EDITION" "python$PYTHON_EDITION.exe"
 

@@ -315,6 +315,13 @@ inspect_install_arguments() {
 
     PYTHON_EDITION="$1"
 
+    case $PYTHON_EDITION in
+        3.1[0-3])
+            ;;
+        3.9);;
+        *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
+    esac
+
     shift
 
     while [ -n "$1" ]
@@ -960,7 +967,7 @@ package_info_python3() {
             PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz'
             PACKAGE_SRC_SHA='12445c7b3db3126c41190bfdc1c8239c39c719404e844babbd015a1bc3fafcd4'
             ;;
-        *)  abort 1 "unsupported python version: $PYTHON_EDITION"
+        *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
 
     PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
@@ -1100,10 +1107,10 @@ ${COLOR_GREEN}$ARG0 -h${COLOR_OFF}
 ${COLOR_GREEN}$ARG0 config${COLOR_OFF}
     show config.
 
-${COLOR_GREEN}$ARG0 install <PYTHON-VERSION> [OPTIONS]${COLOR_OFF}
+${COLOR_GREEN}$ARG0 install <PYTHON-EDITION> [OPTIONS]${COLOR_OFF}
     Influential environment variables: TAR, GMAKE, CC, CXX, AS, LD, AR, RANLIB, CFLAGS, CXXFLAGS, CPPFLAGS, LDFLAGS
 
-    PYTHON-VERSION: 3.9, 3.10, 3.11, 3.12, 3.13
+    PYTHON-EDITION: 3.9, 3.10, 3.11, 3.12, 3.13
 
     OPTIONS:
         ${COLOR_BLUE}--prefix=<DIR>${COLOR_OFF}
