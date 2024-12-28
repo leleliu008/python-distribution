@@ -2,6 +2,16 @@ name: publish python-distribution
 
 on:
   workflow_dispatch:
+    inputs:
+      python-edition:
+        description: choose a python edition
+        type: choice
+        options:
+          - '3.13'
+          - '3.12'
+          - '3.11'
+          - '3.10'
+          - '3.9'
 
 jobs:
 
@@ -12,8 +22,12 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - id:  check-if-build
         run: |
+          set -ex
+
           cat > QUERY <<EOF
           {
             repository(owner: "leleliu008", name: "python-distribution") {
@@ -24,23 +38,23 @@ jobs:
           }
           EOF
 
-          LATEST_RELEASE_TAGNAME="$(gh api graphql -f "query=$(cat QUERY)" --jq .data.repository.latestRelease.name)"
+          LATEST_RELEASE_VERSION="$(gh api graphql -f "query=$(cat QUERY)" --jq .data.repository.latestRelease.name)"
 
-          RELEASE_TAGNAME="$(date +%Y.%m.%d)"
+          RELEASE_VERSION="$(./build.sh python-version ${{ github.event.inputs.python-edition }})"
 
-          if [ "$LATEST_RELEASE_TAGNAME" = "$RELEASE_TAGNAME" ] ; then
+          if [ "$LATEST_RELEASE_VERSION" = "$RELEASE_VERSION" ] ; then
               RELEASE=no
           else
               RELEASE=yes
           fi
 
           printf 'RELEASE=%s\n' "$RELEASE" >> "$GITHUB_OUTPUT"
-          printf 'RELEASE_TAGNAME=%s\n' "$RELEASE_TAGNAME" >> "$GITHUB_OUTPUT"
+          printf 'RELEASE_VERSION=%s\n' "$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
 
 
     outputs:
       if-new-release:  ${{ steps.check-if-build.outputs.RELEASE }}
-      release-tagname: ${{ steps.check-if-build.outputs.RELEASE_TAGNAME }}
+      release-version: ${{ steps.check-if-build.outputs.RELEASE_VERSION }}
 
 
   dragonflybsd:
@@ -53,7 +67,6 @@ jobs:
       fail-fast: false
       matrix:
         target-version: ['6.4']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     steps:
       - uses: actions/checkout@v4
@@ -64,13 +77,12 @@ jobs:
           usesh: true
           sync: rsync
           copyback: true
-          run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} dragonflybsd-${{ matrix.target-version }}-x86_64
+          run: ./pack.sh ${{ needs.check.outputs.release-version }} dragonflybsd-${{ matrix.target-version }}-x86_64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
-
+          name: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
 
 
   freebsd:
@@ -82,8 +94,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['14.1', '14.0', '13.4', '13.3', '13.2']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        target-version: ['14.2', '14.1', '14.0', '13.4', '13.3', '13.2']
 
     steps:
       - uses: actions/checkout@v4
@@ -93,12 +104,12 @@ jobs:
           operating_system: freebsd
           version: ${{ matrix.target-version }}
           shell: bash
-          run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} freebsd-${{ matrix.target-version }}-amd64
+          run: ./pack.sh ${{ needs.check.outputs.release-version }} freebsd-${{ matrix.target-version }}-amd64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
 
 
   openbsd:
@@ -110,9 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #target-version: ['7.5', '7.4', '7.3', '7.2']
-        target-version: ['7.6', '7.5']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        target-version: ['7.6', '7.5', '7.4', '7.3', '7.2']
 
     steps:
       - uses: actions/checkout@v4
@@ -122,12 +131,13 @@ jobs:
           operating_system: openbsd
           version: ${{ matrix.target-version }}
           shell: bash
-          run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} openbsd-${{ matrix.target-version }}-amd64
+          run: ./pack.sh ${{ needs.check.outputs.release-version }} openbsd-${{ matrix.target-version }}-amd64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
+
 
   netbsd:
     needs: check
@@ -138,8 +148,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['10.0', '9.4', '9.3', '9.2']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        target-version: ['9.4', '9.3', '9.2']
+          #target-version: ['10.0', '9.4', '9.3', '9.2']
 
     steps:
       - uses: actions/checkout@v4
@@ -151,12 +161,12 @@ jobs:
           operating_system: netbsd
           version: ${{ matrix.target-version }}
           shell: bash
-          run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} netbsd-${{ matrix.target-version }}-amd64
+          run: ./pack.sh ${{ needs.check.outputs.release-version }} netbsd-${{ matrix.target-version }}-amd64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
 
 
   macos-arm64:
@@ -169,7 +179,6 @@ jobs:
       fail-fast: false
       matrix:
         target-version: ['10.15', '11.0', '12.0', '13.0', '14.0', '15.0']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target-version }}
@@ -177,12 +186,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} macos-${{ matrix.target-version }}-arm64
+      - run: ./pack.sh ${{ needs.check.outputs.release-version }} macos-${{ matrix.target-version }}-arm64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-macos-${{ matrix.target-version }}-arm64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-macos-${{ matrix.target-version }}-arm64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-arm64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-arm64.tar.xz
 
 
   macos-x86_64:
@@ -195,7 +204,6 @@ jobs:
       fail-fast: false
       matrix:
         target-version: ['10.15', '11.0', '12.0', '13.0', '14.0', '15.0']
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target-version }}
@@ -203,110 +211,85 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} macos-${{ matrix.target-version }}-x86_64
+      - run: ./pack.sh ${{ needs.check.outputs.release-version }} macos-${{ matrix.target-version }}-x86_64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
 
 
-  linux-glibc:
+  linux-x86_64:
     needs: check
     if: needs.check.outputs.if-new-release == 'yes'
-
-    strategy:
-      fail-fast: false
-      matrix:
-        target-arch: [x86_64, aarch64, ppc64le, riscv64, s390x]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - run: |
-          cat > run.sh <<EOF
-          ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} linux-glibc-${{ matrix.target-arch }}
-          EOF
-
-          chmod +x run.sh
-
-      # https://github.com/multiarch/qemu-user-static
-      - if: matrix.target-arch != 'x86_64'
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-      - if: matrix.target-arch == 'x86_64'
-        run: docker run -v $PWD:/root -w /root --name ubuntu         ubuntu:18.04 sh run.sh
-
-      - if: matrix.target-arch == 'aarch64'
-        run: docker run -v $PWD:/root -w /root --name ubuntu arm64v8/ubuntu:18.04 sh run.sh
-
-      - if: matrix.target-arch == 'ppc64le'
-        run: docker run -v $PWD:/root -w /root --name ubuntu ppc64le/ubuntu:18.04 sh run.sh
-
-      - if: matrix.target-arch == 'riscv64'
-        run: docker run -v $PWD:/root -w /root --name ubuntu riscv64/ubuntu:23.04 sh run.sh
-
-      - if: matrix.target-arch == 's390x'
-        run: docker run -v $PWD:/root -w /root --name ubuntu   s390x/ubuntu:18.04 sh run.sh
+      - run: ./pack.sh ${{ needs.check.outputs.release-version }} linux-any-x86_64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-linux-glibc-${{ matrix.target-arch }}.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-linux-glibc-${{ matrix.target-arch }}.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-linux-any-x86_64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-linux-any-x86_64.tar.xz
 
 
-  linux-musl:
+  linux-other:
     needs: check
     if: needs.check.outputs.if-new-release == 'yes'
+
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        target-arch: [x86_64, aarch64, ppc64le, riscv64, s390x]
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
-
-    runs-on: ubuntu-latest
+        target-arch: [aarch64, ppc64le, riscv64, s390x]
 
     steps:
       - uses: actions/checkout@v4
 
       - run: |
-          cat > run.sh <<EOF
-          ./pack.sh ${{ matrix.python-version }} ${{ needs.check.outputs.release-tagname }} linux-musl-${{ matrix.target-arch }}
-          EOF
+          case ${{ matrix.target-arch }} in
+            x86_64)  X=amd64 ;;
+            aarch64) X=arm64 ;;
+            ppc64le) X=ppc64el ;;
+            *)       X=${{ matrix.target-arch }}
+          esac
+          curl -LO https://cdimage.ubuntu.com/ubuntu-base/releases/24.04/release/ubuntu-base-24.04.1-base-$X.tar.gz
 
-          chmod +x run.sh
+      - run: install -d ubuntu-rootfs
+      - run: tar xf ubuntu-base-24.04.1-base-*.tar.gz -C ubuntu-rootfs
 
-      # https://github.com/multiarch/qemu-user-static
-      - if: matrix.target-arch != 'x86_64'
-        run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - run: cp -p /etc/resolv.conf ubuntu-rootfs/etc/
+      - run: cp build.sh pack.sh python.c ubuntu-rootfs/
 
-      - if: matrix.target-arch == 'x86_64'
-        run: docker run -v $PWD:/root -w /root --name alpine         alpine sh run.sh
+      - run: sudo mount -o bind  /dev ubuntu-rootfs/dev
+      - run: sudo mount -t proc  none ubuntu-rootfs/proc
+      - run: sudo mount -t sysfs none ubuntu-rootfs/sys
+      - run: sudo mount -t tmpfs none ubuntu-rootfs/tmp
 
-      - if: matrix.target-arch == 'aarch64'
-        run: docker run -v $PWD:/root -w /root --name alpine arm64v8/alpine sh run.sh
+      - run: sudo apt-get -y update
+      - run: sudo apt-get -y install qemu-user-static binfmt-support
 
-      - if: matrix.target-arch == 'ppc64le'
-        run: docker run -v $PWD:/root -w /root --name alpine ppc64le/alpine sh run.sh
+      - run: update-binfmts --enable
 
-      - if: matrix.target-arch == 'riscv64'
-        run: docker run -v $PWD:/root -w /root --name alpine riscv64/alpine sh run.sh
+      - run: sudo install -g `id -g` -o `id -u` /usr/bin/qemu-${{ matrix.target-arch }}-static ubuntu-rootfs/
 
-      - if: matrix.target-arch == 's390x'
-        run: docker run -v $PWD:/root -w /root --name alpine   s390x/alpine sh run.sh
+      - run: sudo chroot ubuntu-rootfs /qemu-${{ matrix.target-arch }}-static /bin/sh pack.sh ${{ needs.check.outputs.release-version }} linux-any-${{ matrix.target-arch }}
+
+      - run: mv ubuntu-rootfs/python-${{ needs.check.outputs.release-version }}-linux-any-${{ matrix.target-arch }}.tar.xz .
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-linux-musl-${{ matrix.target-arch }}.tar.xz
-          path: python-${{ matrix.python-version }}+${{ needs.check.outputs.release-tagname }}-linux-musl-${{ matrix.target-arch }}.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-linux-any-${{ matrix.target-arch }}.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-linux-any-${{ matrix.target-arch }}.tar.xz
+
 
 
   publish:
-    needs: [check, dragonflybsd, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-glibc, linux-musl]
+    needs: [check, dragonflybsd, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-x86_64, linux-other]
     if: needs.check.outputs.if-new-release == 'yes'
 
     runs-on: ubuntu-latest
@@ -330,7 +313,7 @@ jobs:
           ## config
 
           \`\`\`yaml
-          $(./build.sh config)
+          $(./build.sh config ${{ github.event.inputs.python-edition }})
           \`\`\`
 
           ## sha256sum
@@ -340,4 +323,4 @@ jobs:
           \`\`\`
           EOF
 
-      - run: gh release create ${{ needs.check.outputs.release-tagname }} *.tar.xz --title ${{ needs.check.outputs.release-tagname }} --notes-file notes.md
+      - run: gh release create ${{ needs.check.outputs.release-version }} *.tar.xz --title ${{ needs.check.outputs.release-version }} --notes-file notes.md

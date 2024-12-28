@@ -313,7 +313,7 @@ inspect_install_arguments() {
     unset DEBUG_CC
     unset DEBUG_LD
 
-    REQUEST_TO_BUILD_PYTHON_VERSION="$1"
+    PYTHON_EDITION="$1"
 
     shift
 
@@ -939,7 +939,7 @@ package_info_libxcrypt() {
 }
 
 package_info_python3() {
-    case $REQUEST_TO_BUILD_PYTHON_VERSION in
+    case $PYTHON_EDITION in
         3.9)
             PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.9.20/Python-3.9.20.tgz'
             PACKAGE_SRC_SHA='6b281279efd85294d2d6993e173983a57464c0133956fbbb5536ec9646beaf0c'
@@ -960,7 +960,7 @@ package_info_python3() {
             PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz'
             PACKAGE_SRC_SHA='12445c7b3db3126c41190bfdc1c8239c39c719404e844babbd015a1bc3fafcd4'
             ;;
-        *)  abort 1 "unsupported python version: $REQUEST_TO_BUILD_PYTHON_VERSION"
+        *)  abort 1 "unsupported python version: $PYTHON_EDITION"
     esac
 
     PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
@@ -1200,8 +1200,25 @@ case $1 in
     ''|--help|-h)
         help
         ;;
+    python-version)
+        shift
+        [ -z "$1" ] && abort 1 '$ARG0 python-version <PYTHON-EDITION>, <PYTHON-EDITION> is unspecified. It can be 3.13, 3.12, 3.11, 3.10, 3.9'
+        PYTHON_EDITION="$1"
+
+        unset PACKAGE_SRC_URL
+
+        package_info_python3
+
+        PACKAGE_SRC_FILENAME="${PACKAGE_SRC_URL##*/}"
+        PACKAGE_SRC_FILENAME_PREFIX="${PACKAGE_SRC_FILENAME%.tgz}"
+        PACKAGE_VERSION="${PACKAGE_SRC_FILENAME_PREFIX##*-}"
+
+        printf '%s\n' "$PACKAGE_VERSION"
+        ;;
     config)
-        REQUEST_TO_BUILD_PYTHON_VERSION='3.11'
+        shift
+        [ -z "$1" ] && abort 1 '$ARG0 config <PYTHON-EDITION>, <PYTHON-EDITION> is unspecified. It can be 3.13, 3.12, 3.11, 3.10, 3.9'
+        PYTHON_EDITION="$1"
         show_config python3
         ;;
     install)

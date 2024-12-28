@@ -75,12 +75,12 @@ __setup_linux() {
     case $ID in
         ubuntu)
             run $sudo apt-get -y update
-            run $sudo apt-get -y install curl libarchive-tools make g++ linux-headers-generic
+            run $sudo apt-get -y install curl libarchive-tools make g++ patchelf
             run $sudo ln -sf /usr/bin/make /usr/bin/gmake
             ;;
         alpine)
             run $sudo apk update
-            run $sudo apk add make g++ linux-headers libarchive-tools
+            run $sudo apk add libarchive-tools make g++
     esac
 }
 
@@ -90,14 +90,49 @@ unset sudo
 
 [ "$(id -u)" -eq 0 ] || sudo=sudo
 
-__setup_${3%%-*}
+TARGET_OS_KIND="${2%%-*}"
+
+__setup_$TARGET_OS_KIND
+
+PREFIX="python-$1-$2"
+
+run $sudo install -d -g `id -g -n` -o `id -u -n` "$PREFIX"
 
 [ -f cacert.pem ] && run export SSL_CERT_FILE="$PWD/cacert.pem"
 
-PREFIX="python-$1+$2-$3"
+run ./build.sh install --prefix="$PREFIX"
 
-run ./build.sh install "$1" --prefix="$PREFIX"
+run cp build.sh pack.sh "$PREFIX/"
 
-run cp build.sh "$PREFIX/"
+if [ "$TARGET_OS_KIND" = linux ] ; then
+    run mv python.c "$PREFIX/bin/"
+
+    run cd "$PREFIX/bin/"
+
+    run install -d ../runtime/
+
+    PYTHON_EDITION="${1%.*}"
+
+    run mv "python$PYTHON_EDITION" "python$PYTHON_EDITION.exe"
+
+    run chmod -x "python$PYTHON_EDITION.exe"
+
+    DYNAMIC_LOADER_PATH="$(patchelf --print-interpreter "python$PYTHON_EDITION.exe")"
+    DYNAMIC_LOADER_NAME="${DYNAMIC_LOADER_PATH##*/}"
+
+    sed -i "s|ld-linux-x86-64.so.2|$DYNAMIC_LOADER_NAME|" python.c
+
+    run gcc -static -std=gnu99 -Os -flto -s -o "python$PYTHON_EDITION" python.c
+
+    NEEDEDs="$(patchelf --print-needed "python$PYTHON_EDITION.exe")"
+
+    for NEEDED_FILENAME in $NEEDEDs
+    do
+        NEEDED_FILEPATH="$(gcc -print-file-name="$NEEDED_FILENAME")"
+        run cp -L "$NEEDED_FILEPATH" ../runtime/
+    done
+
+    run cd -
+fi
 
 run bsdtar cvaPf "$PREFIX.tar.xz" "$PREFIX"
