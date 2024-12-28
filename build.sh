@@ -948,24 +948,24 @@ package_info_libxcrypt() {
 package_info_python3() {
     case $PYTHON_EDITION in
         3.9)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.9.20/Python-3.9.20.tgz'
-            PACKAGE_SRC_SHA='6b281279efd85294d2d6993e173983a57464c0133956fbbb5536ec9646beaf0c'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.9.21/Python-3.9.21.tgz'
+            PACKAGE_SRC_SHA='3126f59592c9b0d798584755f2bf7b081fa1ca35ce7a6fea980108d752a05bb1'
             ;;
         3.10)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.10.15/Python-3.10.15.tgz'
-            PACKAGE_SRC_SHA='a27864e5ba2a4474f8f6c58ab92ff52767ac8b66f1646923355a53fe3ef15074'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.10.16/Python-3.10.16.tgz'
+            PACKAGE_SRC_SHA='f2e22ed965a93cfeb642378ed6e6cdbc127682664b24123679f3d013fafe9cd0'
             ;;
         3.11)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.10/Python-3.11.10.tgz'
-            PACKAGE_SRC_SHA='92f2faf242681bfa406d53a51e17d42c5373affe23a130cd9697e132ef574706'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.11/Python-3.11.11.tgz'
+            PACKAGE_SRC_SHA='883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed'
             ;;
         3.12)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.7/Python-3.12.7.tgz'
-            PACKAGE_SRC_SHA='73ac8fe780227bf371add8373c3079f42a0dc62deff8d612cd15a618082ab623'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz'
+            PACKAGE_SRC_SHA='5978435c479a376648cb02854df3b892ace9ed7d32b1fead652712bee9d03a45'
             ;;
         3.13)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.0/Python-3.13.0.tgz'
-            PACKAGE_SRC_SHA='12445c7b3db3126c41190bfdc1c8239c39c719404e844babbd015a1bc3fafcd4'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.1/Python-3.13.1.tgz'
+            PACKAGE_SRC_SHA='1513925a9f255ef0793dbf2f78bb4533c9f184bdd0ad19763fd7f47a400a7c55'
             ;;
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
