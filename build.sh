@@ -506,7 +506,7 @@ inspect_install_arguments() {
         CC_ARGS="-fPIC -fno-common"
 
         # https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html
-        LD_ARGS="-Wl,--as-needed -Wl,-z,muldefs -Wl,--allow-multiple-definition"
+        LD_ARGS="-Wl,--as-needed"
     fi
 
     #########################################################################################
@@ -819,8 +819,9 @@ package_info_libnsl() {
 }
 
 package_info_libopenssl() {
-    PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.3.1.tar.gz'
-    PACKAGE_SRC_SHA='777cd596284c883375a2a7a11bf5d2786fc5413255efab20c50d6ffe6d020b7e'
+    PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.4.0.tar.gz'
+    PACKAGE_SRC_URI='https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz'
+    PACKAGE_SRC_SHA='e15dda82fe2fe8139dc2ac21a36d4ca01d5313c75f99f46c4e8a27709b7294bf'
     PACKAGE_DEP_PKG='perl'
     PACKAGE_INSTALL='run ./config "--prefix=$PACKAGE_INSTALL_DIR" no-shared no-tests no-ssl3 no-ssl3-method no-zlib --libdir=lib --openssldir=etc/ssl && run "$GMAKE" build_libs "--jobs=$BUILD_NJOBS" && run "$GMAKE" install_dev'
     # https://github.com/openssl/openssl/blob/master/INSTALL.md
