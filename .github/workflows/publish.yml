@@ -253,8 +253,8 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ruby-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
-          path: ruby-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
+          name: python-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
 
 
   linux-other:
