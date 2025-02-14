@@ -589,23 +589,6 @@ inspect_install_arguments() {
 }
 
 configure() {
-    for FILENAME in config.sub config.guess
-    do
-        FILEPATH="$SESSION_DIR/$FILENAME"
-
-        [ -f "$FILEPATH" ] || {
-            wfetch "https://git.savannah.gnu.org/cgit/config.git/plain/$FILENAME" -o "$FILEPATH"
-
-            run chmod a+x "$FILEPATH"
-
-            if [ "$FILENAME" = 'config.sub' ] ; then
-                sed -i.bak 's/arm64-*/arm64-*|arm64e-*/g' "$FILEPATH"
-            fi
-        }
-
-        find . -name "$FILENAME" -exec cp -vf "$FILEPATH" {} \;
-    done
-
     run ./configure "--prefix=$PACKAGE_INSTALL_DIR" "$@"
     run "$GMAKE" "--jobs=$BUILD_NJOBS"
     run "$GMAKE" install
@@ -876,8 +859,8 @@ package_info_libedit() {
 }
 
 package_info_libuuid() {
-    PACKAGE_SRC_URL='https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.2.tar.xz'
-    PACKAGE_SRC_SHA='d78b37a66f5922d70edf3bdfb01a6b33d34ed3c3cafd6628203b2a2b67c8e8b3'
+    PACKAGE_SRC_URL='https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.4.tar.xz'
+    PACKAGE_SRC_SHA='5c1daf733b04e9859afdc3bd87cc481180ee0f88b5c0946b16fdec931975fb79'
     PACKAGE_DEP_PKG='automake libtool'
     PACKAGE_INSTALL='configure \
         --without-python \
@@ -980,17 +963,17 @@ package_info_python3() {
 
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
     PACKAGE_DOPATCH='
-sed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
-sed -i.bak "s|shared|static|"       Modules/Setup.local
-sed -i.bak "/^_tkinter /d"          Modules/Setup.local
-sed -i.bak "/^_testinternalcapi/d"  Modules/Setup.local
-sed -i.bak "s/-ltermcap/-lncurses/" Modules/Setup.local
+gsed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
+gsed -i "s|shared|static|"       Modules/Setup.local
+gsed -i "/^_tkinter /d"          Modules/Setup.local
+gsed -i "/^_testinternalcapi/d"  Modules/Setup.local
+gsed -i "s/-ltermcap/-lncurses/" Modules/Setup.local
 
 unset NATIVE_PLATFORM_KIND_DARWIN
 
 case $NATIVE_PLATFORM_KIND in
     linux)
-        sed -i.bak "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
+        gsed -i "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
         ;;
     darwin)
         NATIVE_PLATFORM_KIND_DARWIN=1
@@ -998,16 +981,16 @@ case $NATIVE_PLATFORM_KIND in
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
 
-        sed -i.bak "/ossaudiodev/d" Modules/Setup.local
-        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
-        sed -i.bak "/nismodule/d"   Modules/Setup.local
+        gsed -i "/ossaudiodev/d" Modules/Setup.local
+        gsed -i "/spwdmodule/d"  Modules/Setup.local
+        gsed -i "/nismodule/d"   Modules/Setup.local
         ;;
     dragonfly)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
 
-        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
-        sed -i.bak "/nismodule/d"   Modules/Setup.local
-        sed -i.bak "s/-luuid//"     Modules/Setup.local
+        gsed -i "/spwdmodule/d"  Modules/Setup.local
+        gsed -i "/nismodule/d"   Modules/Setup.local
+        gsed -i "s/-luuid//"     Modules/Setup.local
         ;;
     openbsd)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
@@ -1015,18 +998,18 @@ case $NATIVE_PLATFORM_KIND in
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
 
-        sed -i.bak "/ossaudiodev/d" Modules/Setup.local
-        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
-        sed -i.bak "/nismodule/d"   Modules/Setup.local
-        sed -i.bak "s/-luuid//"     Modules/Setup.local
+        gsed -i "/ossaudiodev/d" Modules/Setup.local
+        gsed -i "/spwdmodule/d"  Modules/Setup.local
+        gsed -i "/nismodule/d"   Modules/Setup.local
+        gsed -i "s/-luuid//"     Modules/Setup.local
         ;;
     *bsd)
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
         printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
 
-        sed -i.bak "/spwdmodule/d"  Modules/Setup.local
-        sed -i.bak "/nismodule/d"   Modules/Setup.local
-        sed -i.bak "s/-luuid//"     Modules/Setup.local
+        gsed -i "/spwdmodule/d"  Modules/Setup.local
+        gsed -i "/nismodule/d"   Modules/Setup.local
+        gsed -i "s/-luuid//"     Modules/Setup.local
         ;;
 esac
 
@@ -1094,7 +1077,6 @@ package_info_gsed() {
     PACKAGE_SRC_SHA='6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181'
     PACKAGE_INSTALL='configure --program-prefix=g --with-included-regex --without-selinux --disable-acl --disable-assert'
 }
-
 
 
 help() {
@@ -1234,16 +1216,6 @@ case $1 in
 
         inspect_install_arguments "$@"
 
-        ######################################################
-
-        run install -d "$AUX_INSTALL_DIR/bin"
-        run cd         "$AUX_INSTALL_DIR/bin"
-
-        wfetch 'https://raw.githubusercontent.com/vim/vim/master/src/xxd/xxd.c'
-        run "$CC" "$CFLAGS" "$CPPFLAGS" -DUNIX "$LDFLAGS" -o xxd xxd.c
-
-        ######################################################
-
         (install_the_given_package gsed)
          install_the_given_package python3
 
@@ -1251,10 +1223,10 @@ case $1 in
 
         for f in bin/*
         do
-            X="$(xxd -u -p -l 2 "$f")"
+            X="$(head -c2 "$f")"
 
-            if [ "$X" = 2321 ] ; then
-                Y="$(gsed -n 1p "$f")"
+            if [ "$X" = '#!' ] ; then
+                Y="$(head -n 1 "$f")"
 
                 case "$Y" in
                     */bin/python3*)
@@ -1262,8 +1234,6 @@ case $1 in
                 esac
             fi
         done
-
-        ######################################################
 
         gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." lib/pkgconfig/*.pc
 
