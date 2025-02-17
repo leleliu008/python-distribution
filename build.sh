@@ -786,7 +786,7 @@ package_info_libbz2() {
 }
 
 package_info_libexpat() {
-    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_6_4/expat-2.6.4.tar.xz'
+    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_6_4/expat-2.6.4.tar.lz'
     PACKAGE_SRC_SHA='80a5bec283c7cababb3c6ec145feb4f34a7741eae69f9e6654cc82f5890f05e2'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --without-xmlwf --without-tests --without-examples --without-docbook'
 }
