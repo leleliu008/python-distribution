@@ -1208,15 +1208,21 @@ case $1 in
 
         ######################################################
 
+        run cd lib
+
         LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
 
-        run ln -sf "../../$LIBPYTHON_FILENAME" lib/python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME
+        run ln -sf "../../$LIBPYTHON_FILENAME" python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME
 
-        run rm -rf lib/python$PYTHON_EDITION/test/
+        run rm -rf python$PYTHON_EDITION/test/
 
-        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." lib/pkgconfig/*.pc
+        find -type d -name '__pycache__' -exec rm -rfv {} \;
 
-        run cd bin
+        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." pkgconfig/*.pc
+
+        ######################################################
+
+        run cd ../bin
 
         if [ -f 2to3 ] ; then
             run ln -sf 2to3-$PYTHON_EDITION 2to3
