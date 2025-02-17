@@ -786,8 +786,8 @@ package_info_libbz2() {
 }
 
 package_info_libexpat() {
-    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_6_3/expat-2.6.3.tar.xz'
-    PACKAGE_SRC_SHA='274db254a6979bde5aad404763a704956940e465843f2a9bd9ed7af22e2c0efc'
+    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_6_4/expat-2.6.4.tar.xz'
+    PACKAGE_SRC_SHA='80a5bec283c7cababb3c6ec145feb4f34a7741eae69f9e6654cc82f5890f05e2'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --without-xmlwf --without-tests --without-examples --without-docbook'
 }
 
@@ -847,9 +847,9 @@ package_info_libnsl() {
 }
 
 package_info_libopenssl() {
-    PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.4.0.tar.gz'
-    PACKAGE_SRC_URI='https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz'
-    PACKAGE_SRC_SHA='e15dda82fe2fe8139dc2ac21a36d4ca01d5313c75f99f46c4e8a27709b7294bf'
+    PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.4.1.tar.gz'
+    PACKAGE_SRC_URI='https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz'
+    PACKAGE_SRC_SHA='002a2d6b30b58bf4bea46c43bdd96365aaf8daa6c428782aa4feee06da197df3'
     PACKAGE_DEP_AUX='perl'
     PACKAGE_INSTALL='run ./config "--prefix=$PACKAGE_INSTALL_DIR" no-shared no-tests no-ssl3 no-ssl3-method no-zlib --libdir=lib --openssldir=etc/ssl && run "$GMAKE" build_libs "--jobs=$BUILD_NJOBS" && run "$GMAKE" install_dev'
     # https://github.com/openssl/openssl/blob/master/INSTALL.md
@@ -935,29 +935,29 @@ package_info_libuuid() {
 }
 
 package_info_perl() {
-    PACKAGE_SRC_URL='https://cpan.metacpan.org/authors/id/P/PE/PEVANS/perl-5.38.2.tar.xz'
-    PACKAGE_SRC_URI='https://distfiles.macports.org/perl5.38/perl-5.38.2.tar.xz'
-    PACKAGE_SRC_SHA='d91115e90b896520e83d4de6b52f8254ef2b70a8d545ffab33200ea9f1cf29e8'
+    PACKAGE_SRC_URL='https://cpan.metacpan.org/authors/id/P/PE/PEVANS/perl-5.40.1.tar.xz'
+    PACKAGE_SRC_URI='https://cpan.metacpan.org/authors/id/R/RJ/RJBS/perl-5.40.1.tar.xz'
+    PACKAGE_SRC_SHA='dfa20c2eef2b4af133525610bbb65dd13777ecf998c9c5b1ccf0d308e732ee3f'
     PACKAGE_INSTALL='run ./Configure "-Dprefix=$PACKAGE_INSTALL_DIR" -Dman1dir=none -Dman3dir=none -des -Dmake=gmake -Duselargefiles -Duseshrplib -Dusethreads -Dusenm=false -Dusedl=true && run "$GMAKE" "--jobs=$BUILD_NJOBS" && run "$GMAKE" install'
 }
 
 package_info_autoconf() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz'
-    PACKAGE_SRC_SHA='431075ad0bf529ef13cb41e9042c542381103e80015686222b8a9d4abef42a1c'
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz'
+    PACKAGE_SRC_SHA='afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e'
     PACKAGE_DEP_AUX='perl gm4'
     PACKAGE_INSTALL='configure'
 }
 
 package_info_automake() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz'
-    PACKAGE_SRC_SHA='f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469'
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz'
+    PACKAGE_SRC_SHA='8920c1fc411e13b90bf704ef9db6f29d540e76d232cb3b2c9f4dc4cc599bd990'
     PACKAGE_DEP_AUX='autoconf'
     PACKAGE_INSTALL='configure'
 }
 
 package_info_libtool() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.xz'
-    PACKAGE_SRC_SHA='4f7f217f057ce655ff22559ad221a0fd8ef84ad1fc5fcb6990cecc333aa1635d'
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz'
+    PACKAGE_SRC_SHA='f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675'
     PACKAGE_INSTALL='configure --enable-ltdl-install'
     PACKAGE_DEP_AUX='gm4'
     PACKAGE_DOTWEAK='
@@ -1025,6 +1025,10 @@ unset NATIVE_PLATFORM_KIND_DARWIN
 case $NATIVE_PLATFORM_KIND in
     linux)
         gsed -i "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
+
+        if [ "$NATIVE_PLATFORM_ARCH" = armv7l ] ; then
+            gsed -i "s|armv7-a|armv7-a+fp|g" util/perl/OpenSSL/config.pm
+        fi
         ;;
     darwin)
         NATIVE_PLATFORM_KIND_DARWIN=1
