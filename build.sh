@@ -851,6 +851,10 @@ package_info_libopenssl() {
     PACKAGE_SRC_URI='https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz'
     PACKAGE_SRC_SHA='002a2d6b30b58bf4bea46c43bdd96365aaf8daa6c428782aa4feee06da197df3'
     PACKAGE_DEP_AUX='perl'
+    PACKAGE_DOPATCH='
+    case $NATIVE_PLATFORM_ARCH in
+        armv7l) gsed -i "s|armv7-a|armv7-a+fp|g" util/perl/OpenSSL/config.pm
+    esac'
     PACKAGE_INSTALL='run ./config "--prefix=$PACKAGE_INSTALL_DIR" no-shared no-tests no-ssl3 no-ssl3-method no-zlib --libdir=lib --openssldir=etc/ssl && run "$GMAKE" build_libs "--jobs=$BUILD_NJOBS" && run "$GMAKE" install_dev'
     # https://github.com/openssl/openssl/blob/master/INSTALL.md
 }
@@ -1024,10 +1028,6 @@ unset NATIVE_PLATFORM_KIND_DARWIN
 case $NATIVE_PLATFORM_KIND in
     linux)
         gsed -i "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
-
-        if [ "$NATIVE_PLATFORM_ARCH" = armv7l ] ; then
-            gsed -i "s|armv7-a|armv7-a+fp|g" util/perl/OpenSSL/config.pm
-        fi
         ;;
     darwin)
         NATIVE_PLATFORM_KIND_DARWIN=1
