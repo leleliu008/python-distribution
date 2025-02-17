@@ -935,8 +935,7 @@ package_info_libuuid() {
 }
 
 package_info_perl() {
-    PACKAGE_SRC_URL='https://cpan.metacpan.org/authors/id/P/PE/PEVANS/perl-5.40.1.tar.xz'
-    PACKAGE_SRC_URI='https://cpan.metacpan.org/authors/id/R/RJ/RJBS/perl-5.40.1.tar.xz'
+    PACKAGE_SRC_URL='https://www.cpan.org/src/5.0/perl-5.40.1.tar.xz'
     PACKAGE_SRC_SHA='dfa20c2eef2b4af133525610bbb65dd13777ecf998c9c5b1ccf0d308e732ee3f'
     PACKAGE_INSTALL='run ./Configure "-Dprefix=$PACKAGE_INSTALL_DIR" -Dman1dir=none -Dman3dir=none -des -Dmake=gmake -Duselargefiles -Duseshrplib -Dusethreads -Dusenm=false -Dusedl=true && run "$GMAKE" "--jobs=$BUILD_NJOBS" && run "$GMAKE" install'
 }
