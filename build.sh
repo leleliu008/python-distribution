@@ -964,7 +964,6 @@ package_info_python3() {
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
 
-    PACKAGE_DEP_AUX='gsed'
     PACKAGE_DEP_LIB='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
 
     case $NATIVE_PLATFORM_KIND in
