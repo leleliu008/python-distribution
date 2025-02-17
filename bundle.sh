@@ -20,10 +20,11 @@ __setup_freebsd
 }
 
 __setup_freebsd() {
-    run $sudo pkg install -y curl libnghttp2 coreutils gsed gmake gcc
+    run $sudo pkg install -y curl libnghttp2 coreutils findutils gsed gmake gcc
 
     run $sudo ln -sf /usr/local/bin/gln        bin/ln
     run $sudo ln -sf /usr/local/bin/gsed       bin/sed
+    run $sudo ln -sf /usr/local/bin/gfind      bin/find
     run $sudo ln -sf /usr/local/bin/gmake      bin/make
     run $sudo ln -sf /usr/local/bin/gstat      bin/stat
     run $sudo ln -sf /usr/local/bin/gdate      bin/date
@@ -37,10 +38,11 @@ __setup_freebsd() {
 }
 
 __setup_openbsd() {
-    run $sudo pkg_add coreutils gsed gmake gcc%11 libarchive
+    run $sudo pkg_add curl coreutils findutils gsed gmake gcc%11 libarchive
 
     run $sudo ln -sf /usr/local/bin/gln        bin/ln
     run $sudo ln -sf /usr/local/bin/gsed       bin/sed
+    run $sudo ln -sf /usr/local/bin/gfind      bin/find
     run $sudo ln -sf /usr/local/bin/gmake      bin/make
     run $sudo ln -sf /usr/local/bin/gstat      bin/stat
     run $sudo ln -sf /usr/local/bin/gdate      bin/date
@@ -55,10 +57,11 @@ __setup_openbsd() {
 
 __setup_netbsd() {
     run $sudo pkgin -y update
-    run $sudo pkgin -y install coreutils gsed gmake bsdtar
+    run $sudo pkgin -y install curl coreutils findutils gsed gmake bsdtar
 
     run $sudo ln -sf /usr/pkg/bin/gln        bin/ln
     run $sudo ln -sf /usr/pkg/bin/gsed       bin/sed
+    run $sudo ln -sf /usr/pkg/bin/gfind      bin/find
     run $sudo ln -sf /usr/pkg/bin/gmake      bin/make
     run $sudo ln -sf /usr/pkg/bin/gstat      bin/stat
     run $sudo ln -sf /usr/pkg/bin/gdate      bin/date
@@ -72,7 +75,10 @@ __setup_netbsd() {
 }
 
 __setup_macos() {
-    run brew install coreutils gnu-sed make
+    run brew install coreutils findutils gnu-sed make
+
+    run ln -sf `command -v gsed`       bin/sed
+    run ln -sf `command -v gfind`      bin/find
 }
 
 __setup_linux() {
@@ -81,13 +87,13 @@ __setup_linux() {
     case $ID in
         ubuntu)
             run $sudo apt-get -y update
-            run $sudo apt-get -y install curl sed libarchive-tools make g++ patchelf
+            run $sudo apt-get -y install curl sed findutils libarchive-tools make g++ patchelf
             run $sudo ln -sf /usr/bin/make bin/gmake
             run $sudo ln -sf /usr/bin/sed  bin/gsed
             ;;
         alpine)
             run $sudo apk update
-            run $sudo apk add curl sed libarchive-tools make g++ libc-dev linux-headers patchelf
+            run $sudo apk add curl sed findutils libarchive-tools make g++ libc-dev linux-headers patchelf
             run $sudo ln -sf /usr/bin/make bin/gmake
             run $sudo ln -sf     /bin/sed  bin/gsed
     esac

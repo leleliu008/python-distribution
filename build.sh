@@ -589,6 +589,47 @@ inspect_install_arguments() {
 }
 
 configure() {
+    run cd "$SESSION_DIR"
+
+    if [ -f config/config.sub ] && [ -f config/config.guess ] ; then
+        CONFIG_FILE_DIR="$SESSION_DIR/config"
+    else
+        if [    -d config.git ] ; then
+            rm -rf config.git
+        fi
+
+        if run git clone --depth 1 https://git.savannah.gnu.org/git/config.git ; then
+            CONFIG_FILE_DIR="$SESSION_DIR/config"
+        else
+            if  run curl -L -o _config.sub   "'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD'" &&
+                sh _config.sub x86_64-pc-linux &&
+                run curl -L -o _config.guess "'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'" &&
+                sh _config.guess > /dev/null ; then
+                run chmod +x _config.guess
+                run chmod +x _config.sub
+                run mv _config.guess config.guess
+                run mv _config.sub   config.sub
+                CONFIG_FILE_DIR="$SESSION_DIR"
+            elif run curl -L -o _config.sub   'https://git.savannah.gnu.org/cgit/config.git/plain/config.sub' &&
+                sh _config.sub x86_64-pc-linux &&
+                run curl -L -o _config.guess 'https://git.savannah.gnu.org/cgit/config.git/plain/config.guess' &&
+                sh _config.guess > /dev/null ; then
+                run chmod +x _config.guess
+                run chmod +x _config.sub
+                run mv _config.guess config.guess
+                run mv _config.sub   config.sub
+                CONFIG_FILE_DIR="$SESSION_DIR"
+            else
+                CONFIG_FILE_DIR="$NDKPKG_CORE_DIR"
+            fi
+        fi
+    fi
+
+    run cd -
+
+    find -type f -name config.sub   -exec cp -vf "$CONFIG_FILE_DIR/config.sub"   {} \;
+    find -type f -name config.guess -exec cp -vf "$CONFIG_FILE_DIR/config.guess" {} \;
+
     run ./configure "--prefix=$PACKAGE_INSTALL_DIR" "$@"
     run "$GMAKE" "--jobs=$BUILD_NJOBS"
     run "$GMAKE" install
@@ -1211,11 +1252,11 @@ case $1 in
 
         LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
 
-        run ln -sf "../../$LIBPYTHON_FILENAME" python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME
+        run ln -sf "../../$LIBPYTHON_FILENAME" "python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME"
 
         run rm -rf python$PYTHON_EDITION/test/
 
-        find -type d -name '__pycache__' -exec rm -rfv {} \;
+        find -type d -name '__pycache__' -exec rm -rfv '{}' \;
 
         gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." pkgconfig/*.pc
 
