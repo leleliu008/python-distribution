@@ -1252,11 +1252,13 @@ case $1 in
 
         LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
 
-        run ln -sf "../../$LIBPYTHON_FILENAME" "python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME"
+        LIBPYTHON_FILEPATH="$(find "python$PYTHON_EDITION" -maxdepth 2 -mindepth 2 -type f -name "$LIBPYTHON_FILENAME")"
+
+        run ln -sf "../../$LIBPYTHON_FILENAME" "$LIBPYTHON_FILEPATH"
 
         run rm -rf python$PYTHON_EDITION/test/
 
-        find -type d -name '__pycache__' -exec rm -rfv '{}' \;
+        find -depth -type d -name '__pycache__' -exec rm -rfv {} +
 
         gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." pkgconfig/*.pc
 
