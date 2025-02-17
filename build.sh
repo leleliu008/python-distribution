@@ -600,7 +600,10 @@ install_the_given_package() {
     unset PACKAGE_SRC_URL
     unset PACKAGE_SRC_URI
     unset PACKAGE_SRC_SHA
-    unset PACKAGE_DEP_PKG
+
+    unset PACKAGE_DEP_LIB
+    unset PACKAGE_DEP_AUX
+
     unset PACKAGE_DOPATCH
     unset PACKAGE_INSTALL
     unset PACKAGE_DOTWEAK
@@ -609,7 +612,7 @@ install_the_given_package() {
 
     #########################################################################################
 
-    for PACKAGE_DEPENDENCY in $PACKAGE_DEP_PKG
+    for PACKAGE_DEPENDENCY in $PACKAGE_DEP_LIB $PACKAGE_DEP_AUX
     do
         (install_the_given_package "$PACKAGE_DEPENDENCY")
     done
@@ -696,7 +699,8 @@ install_the_given_package() {
 src-url: $PACKAGE_SRC_URL
 src-uri: $PACKAGE_SRC_URI
 src-sha: $PACKAGE_SRC_SHA
-dep-pkg: $PACKAGE_DEP_PKG
+dep-lib: $PACKAGE_DEP_LIB
+dep-aux: $PACKAGE_DEP_AUX
 install: $PACKAGE_INSTALL
 builtat: $PACKAGE_INSTALL_UTS
 EOF
@@ -762,7 +766,7 @@ package_info_libgdbm() {
 package_info_libsqlite3() {
     PACKAGE_SRC_URL='https://www.sqlite.org/2024/sqlite-autoconf-3460100.tar.gz'
     PACKAGE_SRC_SHA='67d3fe6d268e6eaddcae3727fce58fcc8e9c53869bdd07a0c61e38ddf2965071'
-    PACKAGE_DEP_PKG='libz'
+    PACKAGE_DEP_LIB='libz'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-largefile --disable-editline --disable-readline'
 }
 
@@ -781,14 +785,14 @@ package_info_libiconv() {
 package_info_libintl() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/gettext/gettext-0.22.5.tar.gz'
     PACKAGE_SRC_SHA='ec1705b1e969b83a9f073144ec806151db88127f5e40fe5a94cb6c8fa48996a0'
-    PACKAGE_DEP_PKG='libiconv'
+    PACKAGE_DEP_LIB='libiconv'
     PACKAGE_INSTALL='run cd gettext-runtime && configure --disable-dependency-tracking --enable-static --disable-shared --disable-libasprintf --disable-nls --disable-csharp --disable-java --enable-c++ --enable-nls --with-included-gettext --with-libiconv-prefix="$AUX_INSTALL_DIR"'
 }
 
 package_info_libtirpc() {
     PACKAGE_SRC_URL='https://downloads.sourceforge.net/project/libtirpc/libtirpc/1.3.5/libtirpc-1.3.5.tar.bz2'
     PACKAGE_SRC_SHA='9b31370e5a38d3391bf37edfa22498e28fe2142467ae6be7a17c9068ec0bf12f'
-    PACKAGE_DEP_PKG='libz'
+    PACKAGE_DEP_LIB='libz'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-ipv6 --disable-gssapi'
     PACKAGE_DOPATCH='wfetch "https://raw.githubusercontent.com/leleliu008/sys-queue.h/v1/sys-queue.h" -o "$AUX_INCLUDE_DIR/sys/queue.h"'
 }
@@ -796,7 +800,7 @@ package_info_libtirpc() {
 package_info_libnsl() {
     PACKAGE_SRC_URL='https://github.com/thkukuk/libnsl/releases/download/v2.0.1/libnsl-2.0.1.tar.xz'
     PACKAGE_SRC_SHA='5c9e470b232a7acd3433491ac5221b4832f0c71318618dc6aa04dd05ffcd8fd9'
-    PACKAGE_DEP_PKG='libtirpc libintl'
+    PACKAGE_DEP_LIB='libtirpc libintl'
     PACKAGE_DOPATCH='export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared'
 }
@@ -805,7 +809,7 @@ package_info_libopenssl() {
     PACKAGE_SRC_URL='https://www.openssl.org/source/openssl-3.4.0.tar.gz'
     PACKAGE_SRC_URI='https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz'
     PACKAGE_SRC_SHA='e15dda82fe2fe8139dc2ac21a36d4ca01d5313c75f99f46c4e8a27709b7294bf'
-    PACKAGE_DEP_PKG='perl'
+    PACKAGE_DEP_AUX='perl'
     PACKAGE_INSTALL='run ./config "--prefix=$PACKAGE_INSTALL_DIR" no-shared no-tests no-ssl3 no-ssl3-method no-zlib --libdir=lib --openssldir=etc/ssl && run "$GMAKE" build_libs "--jobs=$BUILD_NJOBS" && run "$GMAKE" install_dev'
     # https://github.com/openssl/openssl/blob/master/INSTALL.md
 }
@@ -853,7 +857,7 @@ ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
 package_info_libedit() {
     PACKAGE_SRC_URL='https://thrysoee.dk/editline/libedit-20240808-3.1.tar.gz'
     PACKAGE_SRC_SHA='5f0573349d77c4a48967191cdd6634dd7aa5f6398c6a57fe037cc02696d6099f'
-    PACKAGE_DEP_PKG='libncurses'
+    PACKAGE_DEP_LIB='libncurses'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-examples'
     PACKAGE_DOTWEAK='run ln -s libedit.a lib/libreadline.a'
 }
@@ -861,7 +865,7 @@ package_info_libedit() {
 package_info_libuuid() {
     PACKAGE_SRC_URL='https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.4.tar.xz'
     PACKAGE_SRC_SHA='5c1daf733b04e9859afdc3bd87cc481180ee0f88b5c0946b16fdec931975fb79'
-    PACKAGE_DEP_PKG='automake libtool'
+    PACKAGE_DEP_AUX='automake libtool'
     PACKAGE_INSTALL='configure \
         --without-python \
         --without-systemd \
@@ -899,14 +903,14 @@ package_info_perl() {
 package_info_autoconf() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz'
     PACKAGE_SRC_SHA='431075ad0bf529ef13cb41e9042c542381103e80015686222b8a9d4abef42a1c'
-    PACKAGE_DEP_PKG='perl gm4'
+    PACKAGE_DEP_AUX='perl gm4'
     PACKAGE_INSTALL='configure'
 }
 
 package_info_automake() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz'
     PACKAGE_SRC_SHA='f01d58cd6d9d77fbdca9eb4bbd5ead1988228fdb73d6f7a201f5f8d6b118b469'
-    PACKAGE_DEP_PKG='autoconf'
+    PACKAGE_DEP_AUX='autoconf'
     PACKAGE_INSTALL='configure'
 }
 
@@ -914,17 +918,23 @@ package_info_libtool() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libtool/libtool-2.4.7.tar.xz'
     PACKAGE_SRC_SHA='4f7f217f057ce655ff22559ad221a0fd8ef84ad1fc5fcb6990cecc333aa1635d'
     PACKAGE_INSTALL='configure --enable-ltdl-install'
-    PACKAGE_DEP_PKG='gm4'
+    PACKAGE_DEP_AUX='gm4'
     PACKAGE_DOTWEAK='
 run ln -s libtool    bin/glibtool
 run ln -s libtoolize bin/glibtoolize
 '
 }
 
+package_info_gm4() {
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz'
+    PACKAGE_SRC_SHA='63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96'
+    PACKAGE_INSTALL='configure'
+}
+
 package_info_libxcrypt() {
     PACKAGE_SRC_URL='https://github.com/besser82/libxcrypt/releases/download/v4.4.36/libxcrypt-4.4.36.tar.xz'
     PACKAGE_SRC_SHA='e5e1f4caee0a01de2aee26e3138807d6d3ca2b8e67287966d1fefd65e1fd8943'
-    PACKAGE_DEP_PKG='perl'
+    PACKAGE_DEP_AUX='perl'
     PACKAGE_DOPATCH='export LDFLAGS="-static $LDFLAGS"'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-obsolete-api=glibc --disable-xcrypt-compat-files --disable-failure-tokens --disable-valgrind'
 }
@@ -954,11 +964,12 @@ package_info_python3() {
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
 
-    PACKAGE_DEP_PKG='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
+    PACKAGE_DEP_AUX='gsed'
+    PACKAGE_DEP_LIB='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
 
     case $NATIVE_PLATFORM_KIND in
-        darwin) PACKAGE_DEP_PKG="$PACKAGE_DEP_PKG libuuid" ;;
-         linux) PACKAGE_DEP_PKG="$PACKAGE_DEP_PKG libuuid libnsl libxcrypt"
+        darwin) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid" ;;
+         linux) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid libnsl libxcrypt"
     esac
 
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
@@ -1052,32 +1063,6 @@ export OPENSSL_LIBS="-lssl -lcrypto -lpthread -ldl"
 export LIBS=-lm'
 }
 
-package_info_gm4() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz'
-    PACKAGE_SRC_SHA='63aede5c6d33b6d9b13511cd0be2cac046f2e70fd0a07aa9573a04a82783af96'
-    PACKAGE_INSTALL='configure'
-}
-
-package_info_gmake() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz'
-    PACKAGE_SRC_SHA='dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3'
-    PACKAGE_INSTALL='configure --program-prefix=g --without-guile --without-dmalloc'
-    PACKAGE_DOTWEAK='run ln -s gmake bin/make'
-}
-
-package_info_pkgconf() {
-    PACKAGE_SRC_URL='https://distfiles.ariadne.space/pkgconf/pkgconf-2.3.0.tar.xz'
-    PACKAGE_SRC_SHA='3a9080ac51d03615e7c1910a0a2a8df08424892b5f13b0628a204d3fcce0ea8b'
-    PACKAGE_INSTALL='configure'
-    PACKAGE_DOTWEAK='run ln -s pkgconf bin/pkg-config'
-}
-
-package_info_gsed() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz'
-    PACKAGE_SRC_SHA='6e226b732e1cd739464ad6862bd1a1aba42d7982922da7a53519631d24975181'
-    PACKAGE_INSTALL='configure --program-prefix=g --with-included-regex --without-selinux --disable-acl --disable-assert'
-}
-
 
 help() {
     printf '%b\n' "\
@@ -1164,7 +1149,10 @@ show_config() {
     unset PACKAGE_SRC_URL
     unset PACKAGE_SRC_URI
     unset PACKAGE_SRC_SHA
-    unset PACKAGE_DEP_PKG
+
+    unset PACKAGE_DEP_LIB
+    unset PACKAGE_DEP_AUX
+
     unset PACKAGE_DOPATCH
     unset PACKAGE_INSTALL
     unset PACKAGE_DOTWEAK
@@ -1178,7 +1166,7 @@ $1:
 
 EOF
 
-    for DEP_PKG_NAME in $PACKAGE_DEP_PKG
+    for DEP_PKG_NAME in $PACKAGE_DEP_LIB
     do
         (show_config "$DEP_PKG_NAME")
     done
@@ -1216,13 +1204,33 @@ case $1 in
 
         inspect_install_arguments "$@"
 
-        (install_the_given_package gsed)
-         install_the_given_package python3
+        install_the_given_package python3
 
         ######################################################
 
-        for f in bin/*
+        LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
+
+        run ln -sf "../../$LIBPYTHON_FILENAME" lib/python$PYTHON_EDITION/config-$PYTHON_EDITION-*/$LIBPYTHON_FILENAME
+
+        run rm -rf lib/python$PYTHON_EDITION/test/
+
+        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." lib/pkgconfig/*.pc
+
+        run cd bin
+
+        if [ -f 2to3 ] ; then
+            run ln -sf 2to3-$PYTHON_EDITION 2to3
+        fi
+
+        for item in idle pip pydoc
         do
+            run ln -sf "${item}${PYTHON_EDITION}" "${item}${PYTHON_EDITION%%.*}"
+        done
+
+        for f in *
+        do
+            [ -L "$f" ] && continue
+
             X="$(head -c2 "$f")"
 
             if [ "$X" = '#!' ] ; then
@@ -1234,8 +1242,6 @@ case $1 in
                 esac
             fi
         done
-
-        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." lib/pkgconfig/*.pc
 
         ######################################################
 
