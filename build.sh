@@ -1261,9 +1261,11 @@ case $1 in
 
         run rm -rf python$PYTHON_EDITION/test/
 
-        find -depth -type d -name '__pycache__' -exec rm -rfv {} +
+        gsed -i '1c #!/usr/bin/env python3' "${LIBPYTHON_FILEPATH%/*}/python-config.py"
 
-        gsed -i "/^prefix=/c prefix=\${pcfiledir}/../.." pkgconfig/*.pc
+        gsed -i '/^prefix=/c prefix=${pcfiledir}/../..' pkgconfig/*.pc
+
+        find -depth -type d -name '__pycache__' -exec rm -rfv {} +
 
         ######################################################
 
