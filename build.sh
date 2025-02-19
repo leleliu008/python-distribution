@@ -293,11 +293,11 @@ inspect_install_arguments() {
 
     unset ENABLE_LTO
 
-    unset REQUEST_TO_KEEP_SESSION_DIR
+    unset KEEP_SESSION_DIR
 
-    unset REQUEST_TO_EXPORT_COMPILE_COMMANDS_JSON
+    unset EXPORT_COMPILE_COMMANDS_JSON
 
-    unset REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE
+    unset CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE
 
     unset SPECIFIED_PACKAGE_LIST
 
@@ -389,14 +389,14 @@ inspect_install_arguments() {
                 esac
                 ;;
             --static)
-                REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE=1
+                CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE=1
                 ;;
             -j) shift
                 isInteger "$1" || abort 1 "-j <N>, <N> must be an integer."
                 BUILD_NJOBS="$1"
                 ;;
-            -K) REQUEST_TO_KEEP_SESSION_DIR=1 ;;
-            -E) REQUEST_TO_EXPORT_COMPILE_COMMANDS_JSON=1 ;;
+            -K) KEEP_SESSION_DIR=1 ;;
+            -E) EXPORT_COMPILE_COMMANDS_JSON=1 ;;
 
             -*) abort 1 "unrecognized option: $1"
                 ;;
@@ -1070,7 +1070,7 @@ esac
 unset PYTHONHOME
 unset PYTHONPATH
 
-if [ "$REQUEST_TO_CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE" = 1 ] ; then
+if [ "$CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE" = 1 ] ; then
     if [ "$NATIVE_PLATFORM_KIND_DARWIN" != 1 ] ; then
         export LDFLAGS="$LDFLAGS -static"
     fi
@@ -1249,56 +1249,7 @@ case $1 in
 
         install_the_given_package python3
 
-        ######################################################
-
-        run cd lib
-
-        LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
-
-        LIBPYTHON_FILEPATH="$(find "python$PYTHON_EDITION" -maxdepth 2 -mindepth 2 -type f -name "$LIBPYTHON_FILENAME")"
-
-        run ln -sf "../../$LIBPYTHON_FILENAME" "$LIBPYTHON_FILEPATH"
-
-        run rm -rf python$PYTHON_EDITION/test/
-
-        gsed -i '1c #!/usr/bin/env python3' "${LIBPYTHON_FILEPATH%/*}/python-config.py"
-
-        gsed -i '/^prefix=/c prefix=${pcfiledir}/../..' pkgconfig/*.pc
-
-        find -depth -type d -name '__pycache__' -exec rm -rfv {} +
-
-        ######################################################
-
-        run cd ../bin
-
-        if [ -f 2to3 ] ; then
-            run ln -sf 2to3-$PYTHON_EDITION 2to3
-        fi
-
-        for item in idle pip pydoc
-        do
-            run ln -sf "${item}${PYTHON_EDITION}" "${item}${PYTHON_EDITION%%.*}"
-        done
-
-        for f in *
-        do
-            [ -L "$f" ] && continue
-
-            X="$(head -c2 "$f")"
-
-            if [ "$X" = '#!' ] ; then
-                Y="$(head -n 1 "$f")"
-
-                case "$Y" in
-                    */bin/python3*)
-                        gsed -i '1c #!/usr/bin/env python3' "$f"
-                esac
-            fi
-        done
-
-        ######################################################
-
-        if [ "$REQUEST_TO_KEEP_SESSION_DIR" != 1 ] ; then
+        if [ "$KEEP_SESSION_DIR" != 1 ] ; then
             rm -rf "$SESSION_DIR"
         fi
         ;;

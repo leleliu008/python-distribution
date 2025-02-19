@@ -107,61 +107,87 @@ unset sudo
 
 TARGET_OS_KIND="${2%%-*}"
 
+######################################################
+
 install -d bin/
 
 __setup_$TARGET_OS_KIND
 
 export PATH="$PWD/bin:$PATH"
 
+######################################################
+
 PREFIX="python-$1-$2"
 
-PYTHON_EDITION="${1%.*}"
-
-run $sudo install -d -g `id -g -n` -o `id -u -n` "$PREFIX"
+run $sudo install -d -g `id -g` -o `id -u` "$PREFIX"
 
 [ -f cacert.pem ] && run export SSL_CERT_FILE="$PWD/cacert.pem"
 
+######################################################
+
+PYTHON_EDITION="${1%.*}"
+
 run ./build.sh install "$PYTHON_EDITION" --prefix="$PREFIX"
 
-run cp build.sh bundle.sh "$PREFIX/"
+run cp *.sh "$PREFIX/"
 
-if [ "$TARGET_OS_KIND" = linux ] ; then
-    ORIGIN_DIR="$PWD"
+INITDIR="$PWD"
 
-    run cd "$PREFIX/bin/"
+######################################################
 
-    run mv "python$PYTHON_EDITION" "python$PYTHON_EDITION.exe"
+run cd "$PREFIX/lib"
 
-    run chmod -x "python$PYTHON_EDITION.exe"
+LIBPYTHON_FILENAME="libpython$PYTHON_EDITION.a"
 
-    DYNAMIC_LOADER_PATH="$(patchelf --print-interpreter "python$PYTHON_EDITION.exe")"
-    DYNAMIC_LOADER_NAME="${DYNAMIC_LOADER_PATH##*/}"
+LIBPYTHON_FILEPATH="$(find "python$PYTHON_EDITION" -maxdepth 2 -mindepth 2 -type f -name "$LIBPYTHON_FILENAME")"
 
-    run mv "$ORIGIN_DIR/python.c" .
+run ln -sf "../../$LIBPYTHON_FILENAME" "$LIBPYTHON_FILEPATH"
 
-    gsed -i "s|ld-linux-x86-64.so.2|$DYNAMIC_LOADER_NAME|" python.c
+run rm -rf python$PYTHON_EDITION/test/
 
-    run gcc -static -std=gnu99 -Os -flto -s -o "python$PYTHON_EDITION" python.c
+gsed -i '1c #!/usr/bin/env python3' "${LIBPYTHON_FILEPATH%/*}/python-config.py"
 
-    NEEDEDs="$(patchelf --print-needed "python$PYTHON_EDITION.exe")"
+gsed -i '/^prefix=/c prefix=${pcfiledir}/../..' pkgconfig/*.pc
 
-    run install -d ../runtime/
-    run cd         ../runtime/
+find -depth -type d -name __pycache__ -exec rm -rfv {} +
 
-    for NEEDED_FILENAME in $NEEDEDs
-    do
-        NEEDED_FILEPATH="$(gcc -print-file-name="$NEEDED_FILENAME")"
-        run cp -L "$NEEDED_FILEPATH" .
-    done
+######################################################
 
-    [ -f    "$DYNAMIC_LOADER_NAME" ] || {
-        case $DYNAMIC_LOADER_NAME in
-            ld-musl-*.so.1)
-                run ln -s "libc.musl${DYNAMIC_LOADER_NAME#ld-musl}" "$DYNAMIC_LOADER_NAME"
-        esac
-    }
+run cd "$PREFIX/bin"
 
-    run cd "$ORIGIN_DIR"
+if [ -f 2to3 ] ; then
+    run ln -sf 2to3-$PYTHON_EDITION 2to3
 fi
 
-run bsdtar cvaPf "$PREFIX.tar.xz" "$PREFIX"
+for item in idle pip pydoc
+do
+    run ln -sf "${item}${PYTHON_EDITION}" "${item}${PYTHON_EDITION%%.*}"
+done
+
+for f in *
+do
+    [ -L "$f" ] && continue
+
+    X="$(head -c2 "$f")"
+
+    if [ "$X" = '#!' ] ; then
+        Y="$(head -n 1 "$f")"
+
+        case "$Y" in
+            */bin/python3*)
+                gsed -i '1c #!/usr/bin/env python3' "$f"
+        esac
+    fi
+done
+
+######################################################
+
+if [ "$TARGET_OS_KIND" = linux ] ; then
+    run ./linux-portable.sh
+fi
+
+######################################################
+
+run cd "$INITDIR"
+
+run bsdtar cvaf "$PREFIX.tar.xz" "$PREFIX"
