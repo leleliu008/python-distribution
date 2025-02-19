@@ -998,12 +998,12 @@ package_info_python3() {
             PACKAGE_SRC_SHA='883bddee3c92fcb91cf9c09c5343196953cbb9ced826213545849693970868ed'
             ;;
         3.12)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.8/Python-3.12.8.tgz'
-            PACKAGE_SRC_SHA='5978435c479a376648cb02854df3b892ace9ed7d32b1fead652712bee9d03a45'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.9/Python-3.12.9.tgz'
+            PACKAGE_SRC_SHA='45313e4c5f0e8acdec9580161d565cf5fea578e3eabf25df7cc6355bf4afa1ee'
             ;;
         3.13)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.1/Python-3.13.1.tgz'
-            PACKAGE_SRC_SHA='1513925a9f255ef0793dbf2f78bb4533c9f184bdd0ad19763fd7f47a400a7c55'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.2/Python-3.13.2.tgz'
+            PACKAGE_SRC_SHA='b8d79530e3b7c96a5cb2d40d431ddb512af4a563e863728d8713039aa50203f9'
             ;;
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
