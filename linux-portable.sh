@@ -180,8 +180,6 @@ EOF
 
 ##################################################################
 
-set -x
-
 [ -n "$1" ] && cd "$1"
 
 echo "PWD=$PWD"
@@ -262,7 +260,7 @@ $NEEDED_SYSTEM_SHARED_LIBS
 FILEPATH_RPATH_MAP:
 $FILEPATH_RPATH_MAP
 EOF
-exit
+
 ##################################################################
 
 [ -z "$DYNAMICALLY_LINKED_EXECUTABLES" ] && abort 1 'no dynamically linked executables found.'
