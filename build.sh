@@ -543,9 +543,9 @@ inspect_install_arguments() {
 
     #########################################################################################
 
-    PP_ARGS="$PP_ARGS -I$AUX_INCLUDE_DIR"
+    PP_ARGS="-I$AUX_INCLUDE_DIR $PP_ARGS"
 
-    LD_ARGS="$LD_ARGS -L$AUX_LIBRARY_DIR"
+    LD_ARGS="-L$AUX_LIBRARY_DIR $LD_ARGS"
 
     PATH="$AUX_INSTALL_DIR/bin:$PATH"
 
