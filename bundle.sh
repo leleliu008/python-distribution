@@ -131,8 +131,6 @@ run ./build.sh install "$PYTHON_EDITION" --prefix="$PREFIX"
 
 run cp *.sh "$PREFIX/"
 
-INITDIR="$PWD"
-
 ######################################################
 
 run cd "$PREFIX/lib"
@@ -153,6 +151,7 @@ find -depth -type d -name __pycache__ -exec rm -rfv {} +
 
 ######################################################
 
+run cd -
 run cd "$PREFIX/bin"
 
 if [ -f 2to3 ] ; then
@@ -182,12 +181,14 @@ done
 
 ######################################################
 
+run cd -
+
+######################################################
+
 if [ "$TARGET_OS_KIND" = linux ] ; then
     run ./linux-portable.sh
 fi
 
 ######################################################
-
-run cd "$INITDIR"
 
 run bsdtar cvaf "$PREFIX.tar.xz" "$PREFIX"
