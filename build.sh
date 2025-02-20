@@ -1021,11 +1021,8 @@ gsed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
 gsed -i "s|shared|static|"       Modules/Setup.local
 gsed -i "/^_tkinter /d"          Modules/Setup.local
 gsed -i "/^_testinternalcapi/d"  Modules/Setup.local
+gsed -i "/^_testcapi/d"          Modules/Setup.local
 gsed -i "s/-ltermcap/-lncurses/" Modules/Setup.local
-
-if [ -f Modules/_testcapi/vectorcall.c ] ; then
-    gsed -i "/_testcapimodule/s|$| _testcapi/vectorcall.c|" Modules/Setup.local
-fi
 
 unset NATIVE_PLATFORM_KIND_DARWIN
 
