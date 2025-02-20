@@ -1028,6 +1028,7 @@ unset NATIVE_PLATFORM_KIND_DARWIN
 case $NATIVE_PLATFORM_KIND in
     linux)
         gsed -i "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
+        gsed -i "/^readline/a _locale _localemodule.c -lintl -liconv" Modules/Setup.local
         ;;
     darwin)
         NATIVE_PLATFORM_KIND_DARWIN=1
@@ -1106,7 +1107,7 @@ export OPENSSL_INCLUDES="-I$AUX_INCLUDE_DIR"
 export OPENSSL_LDFLAGS="-L$AUX_LIBRARY_DIR"
 export OPENSSL_LIBS="-lssl -lcrypto -lpthread -ldl"
 
-export LIBS="-lm -lintl"'
+export LIBS=-lm'
 }
 
 
