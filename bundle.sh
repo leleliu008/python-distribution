@@ -186,7 +186,9 @@ run cd -
 ######################################################
 
 if [ "$TARGET_OS_KIND" = linux ] ; then
+    run cd "$PREFIX"
     run ./linux-portable.sh
+    run cd -
 fi
 
 ######################################################
