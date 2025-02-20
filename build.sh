@@ -1023,6 +1023,10 @@ gsed -i "/^_tkinter /d"          Modules/Setup.local
 gsed -i "/^_testinternalcapi/d"  Modules/Setup.local
 gsed -i "s/-ltermcap/-lncurses/" Modules/Setup.local
 
+if [ -f Modules/_testcapi/vectorcall.c ] ; then
+    gsed -i "/_testcapimodule/s|$| _testcapi/vectorcall.c|" Modules/Setup.local
+fi
+
 unset NATIVE_PLATFORM_KIND_DARWIN
 
 case $NATIVE_PLATFORM_KIND in
