@@ -1106,7 +1106,7 @@ export OPENSSL_INCLUDES="-I$AUX_INCLUDE_DIR"
 export OPENSSL_LDFLAGS="-L$AUX_LIBRARY_DIR"
 export OPENSSL_LIBS="-lssl -lcrypto -lpthread -ldl"
 
-export LIBS=-lm -lintl'
+export LIBS="-lm -lintl"'
 }
 
 
