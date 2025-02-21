@@ -894,6 +894,7 @@ do
     ln -s "${item}w.a" "lib/${item}.a"
 done
 
+ln -s libncurses.a    lib/libtermcap.a
 ln -s libncurses++w.a lib/libncurses++.a
 
 ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
@@ -1022,7 +1023,6 @@ gsed -i "s|shared|static|"       Modules/Setup.local
 gsed -i "/^_tkinter /d"          Modules/Setup.local
 gsed -i "/^_testinternalcapi/d"  Modules/Setup.local
 gsed -i "/^_testcapi/d"          Modules/Setup.local
-gsed -i "s/-ltermcap/-lncurses/" Modules/Setup.local
 
 unset NATIVE_PLATFORM_KIND_DARWIN
 

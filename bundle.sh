@@ -87,13 +87,13 @@ __setup_linux() {
     case $ID in
         ubuntu)
             run $sudo apt-get -y update
-            run $sudo apt-get -y install curl sed findutils libarchive-tools make g++ patchelf
+            run $sudo apt-get -y install curl sed vim findutils libarchive-tools make g++ patchelf
             run $sudo ln -sf /usr/bin/make bin/gmake
             run $sudo ln -sf /usr/bin/sed  bin/gsed
             ;;
         alpine)
             run $sudo apk update
-            run $sudo apk add curl sed findutils libarchive-tools make g++ libc-dev linux-headers patchelf
+            run $sudo apk add curl sed vim findutils libarchive-tools make g++ libc-dev linux-headers patchelf
             run $sudo ln -sf /usr/bin/make bin/gmake
             run $sudo ln -sf     /bin/sed  bin/gsed
     esac
