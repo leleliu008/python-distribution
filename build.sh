@@ -1091,7 +1091,7 @@ gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -D
 run cp Modules/Setup.stdlib Modules/Setup.local
 
 case $NATIVE_PLATFORM_KIND in
-    linux) gsed -i "/^_locale/s|$| -lintl -liconv" Modules/Setup.bootstrap
+    linux) gsed -i "/^_locale/s|$| -lintl -liconv|" Modules/Setup.bootstrap
 esac
 '
 }
