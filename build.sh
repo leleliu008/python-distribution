@@ -1086,9 +1086,13 @@ unset X11_LIBS
 export LIBS=-lm'
 
     PACKAGE_CONFIGURED='
+gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -DUSE_GDBM_COMPAT -lgdbm_compat -lgdbm|" -e "/^_ctypes/s|$| -lffi|" -e "/^readline/s|$| -ledit -lncurses|" Modules/Setup.stdlib
+
 run cp Modules/Setup.stdlib Modules/Setup.local
 
-gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -DUSE_GDBM_COMPAT -lgdbm_compat -lgdbm|" -e "/^_ctypes/s|$| -lffi|" -e "/^readline/s|$| -ledit -lncurses|" Modules/Setup.local
+case $NATIVE_PLATFORM_KIND in
+    linux) gsed -i "/^_locale/s|$| -lintl -liconv" Modules/Setup.bootstrap
+esac
 '
 }
 
