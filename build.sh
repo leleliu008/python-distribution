@@ -1045,8 +1045,18 @@ export LIBLZMA_LIBS="-L$AUX_LIBRARY_DIR -llzma"
 export LIBSQLITE3_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBSQLITE3_LIBS="-L$AUX_LIBRARY_DIR -lsqlite3"
 
-export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
-export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+case $NATIVE_PLATFORM_KIND in
+    darwin)
+        export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
+        export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+        ;;
+     linux)
+        export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
+        export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+        ;;
+    *)  unset  LIBUUID_CFLAGS
+        unset  LIBUUID_LIBS
+esac
 
 export LIBEDIT_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBEDIT_LIBS="-L$AUX_LIBRARY_DIR -ledit -lncurses"
