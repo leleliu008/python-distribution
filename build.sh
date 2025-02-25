@@ -1080,6 +1080,8 @@ fi
 
 export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
 
+export MODULE_BUILDTYPE=static
+
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
 
@@ -1101,12 +1103,24 @@ export LIBEDIT_LIBS="-L$AUX_LIBRARY_DIR -ledit -lncurses"
 export LIBNSL_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBNSL_LIBS="-L$AUX_LIBRARY_DIR -lnsl -ltirpc"
 
+export LIBFFI_CFLAGS="-I$AUX_INCLUDE_DIR"
+export LIBFFI_LIBS="-L$AUX_LIBRARY_DIR -lffi"
+
 export GDBM_CFLAGS="-I$AUX_INCLUDE_DIR"
 export GDBM_LIBS="-L$AUX_LIBRARY_DIR -lgdbm -lgdbm_compat"
 
 export OPENSSL_INCLUDES="-I$AUX_INCLUDE_DIR"
 export OPENSSL_LDFLAGS="-L$AUX_LIBRARY_DIR"
 export OPENSSL_LIBS="-lssl -lcrypto -lpthread -ldl"
+
+unset LIBMPDEC_CFLAGS
+unset LIBMPDEC_LIBS
+
+unset TCLTK_CFLAGS
+unset TCLTK_LIBS
+
+unset X11_CFLAGS
+unset X11_LIBS
 
 export LIBS=-lm'
 }
