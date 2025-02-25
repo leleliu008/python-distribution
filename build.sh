@@ -631,6 +631,11 @@ configure() {
     find -type f -name config.guess -exec cp -vf "$CONFIG_FILE_DIR/config.guess" {} \;
 
     run ./configure "--prefix=$PACKAGE_INSTALL_DIR" "$@"
+
+    if [ -n  "$PACKAGE_CONFIGURED" ] ; then
+        eval "$PACKAGE_CONFIGURED"
+    fi
+
     run "$GMAKE" "--jobs=$BUILD_NJOBS"
     run "$GMAKE" install
 }
@@ -648,6 +653,7 @@ install_the_given_package() {
     unset PACKAGE_DOPATCH
     unset PACKAGE_INSTALL
     unset PACKAGE_DOTWEAK
+    unset PACKAGE_CONFIGURED
 
     package_info_$1
 
@@ -1018,70 +1024,14 @@ package_info_python3() {
     esac
 
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
+
     PACKAGE_DOPATCH='
-gsed -n -E "s/^#([a-z_\*].*)$/\1/p"  Modules/Setup > Modules/Setup.local
-gsed -i "s|shared|static|"       Modules/Setup.local
-gsed -i "/^_tkinter /d"          Modules/Setup.local
-gsed -i "/^_testinternalcapi/d"  Modules/Setup.local
-gsed -i "/^_testcapi/d"          Modules/Setup.local
-
-unset NATIVE_PLATFORM_KIND_DARWIN
-
-case $NATIVE_PLATFORM_KIND in
-    linux)
-        gsed -i "s/-lnsl/-lnsl -lintl -liconv/" Modules/Setup.local
-        gsed -i "/^readline/a _locale _localemodule.c -lintl -liconv" Modules/Setup.local
-        ;;
-    darwin)
-        NATIVE_PLATFORM_KIND_DARWIN=1
-
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
-
-        gsed -i "/ossaudiodev/d" Modules/Setup.local
-        gsed -i "/spwdmodule/d"  Modules/Setup.local
-        gsed -i "/nismodule/d"   Modules/Setup.local
-        ;;
-    dragonfly)
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
-
-        gsed -i "/spwdmodule/d"  Modules/Setup.local
-        gsed -i "/nismodule/d"   Modules/Setup.local
-        gsed -i "s/-luuid//"     Modules/Setup.local
-        ;;
-    openbsd)
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/librt.a"
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libcrypt.a"
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
-
-        gsed -i "/ossaudiodev/d" Modules/Setup.local
-        gsed -i "/spwdmodule/d"  Modules/Setup.local
-        gsed -i "/nismodule/d"   Modules/Setup.local
-        gsed -i "s/-luuid//"     Modules/Setup.local
-        ;;
-    *bsd)
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libdl.a"
-        printf "!<arch>\n" > "$AUX_LIBRARY_DIR/libuuid.a"
-
-        gsed -i "/spwdmodule/d"  Modules/Setup.local
-        gsed -i "/nismodule/d"   Modules/Setup.local
-        gsed -i "s/-luuid//"     Modules/Setup.local
-        ;;
-esac
-
 unset PYTHONHOME
 unset PYTHONPATH
 
-if [ "$CREATE_FULLY_STATICALLY_LINKED_EXECUTABLE" = 1 ] ; then
-    if [ "$NATIVE_PLATFORM_KIND_DARWIN" != 1 ] ; then
-        export LDFLAGS="$LDFLAGS -static"
-    fi
-fi
+export MODULE_BUILDTYPE=static
 
 export CPPFLAGS="$CPPFLAGS -I$AUX_INCLUDE_DIR/tirpc"
-
-export MODULE_BUILDTYPE=static
 
 export ZLIB_CFLAGS="-I$AUX_INCLUDE_DIR"
 export ZLIB_LIBS="-L$AUX_LIBRARY_DIR -lz"
@@ -1108,7 +1058,7 @@ export LIBFFI_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBFFI_LIBS="-L$AUX_LIBRARY_DIR -lffi"
 
 export GDBM_CFLAGS="-I$AUX_INCLUDE_DIR"
-export GDBM_LIBS="-L$AUX_LIBRARY_DIR -lgdbm -lgdbm_compat"
+export GDBM_LIBS="-L$AUX_LIBRARY_DIR -lgdbm_compat -lgdbm"
 
 export OPENSSL_INCLUDES="-I$AUX_INCLUDE_DIR"
 export OPENSSL_LDFLAGS="-L$AUX_LIBRARY_DIR"
@@ -1124,6 +1074,12 @@ unset X11_CFLAGS
 unset X11_LIBS
 
 export LIBS=-lm'
+
+    PACKAGE_CONFIGURED='
+run cp Modules/Setup.stdlib Modules/Setup.local
+
+gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -DUSE_GDBM_COMPAT -lgdbm_compat -lgdbm|" -e "/^_ctypes/s|$| -lffi|" -e "/^readline/s|$| -leditline -lncurses|" Modules/Setup.local
+'
 }
 
 
