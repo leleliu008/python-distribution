@@ -1009,11 +1009,12 @@ package_info_python3() {
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
 
-    PACKAGE_DEP_LIB='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl libedit'
+    PACKAGE_DEP_LIB='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl'
 
     case $NATIVE_PLATFORM_KIND in
         darwin) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid" ;;
-         linux) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid libnsl libxcrypt"
+         linux) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid libnsl libxcrypt libedit" ;;
+             *) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libedit" ;;
     esac
 
     PACKAGE_INSTALL='configure --with-system-expat --with-system-ffi --with-readline=editline --with-openssl=$PACKAGE_INSTALL_DIR --with-ensurepip=yes --with-lto --enable-ipv6 --enable-static --disable-shared --enable-largefile --disable-option-checking --disable-nls --disable-debug --enable-loadable-sqlite-extensions --disable-profiling py_cv_module__tkinter=disabled'
