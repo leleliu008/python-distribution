@@ -1078,7 +1078,7 @@ export LIBS=-lm'
     PACKAGE_CONFIGURED='
 run cp Modules/Setup.stdlib Modules/Setup.local
 
-gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -DUSE_GDBM_COMPAT -lgdbm_compat -lgdbm|" -e "/^_ctypes/s|$| -lffi|" -e "/^readline/s|$| -leditline -lncurses|" Modules/Setup.local
+gsed -i -e "s|#@MODULE_.*_TRUE@||" -e "/^_testinternalcapi/d" -e "/^_dbm/s|$| -DUSE_GDBM_COMPAT -lgdbm_compat -lgdbm|" -e "/^_ctypes/s|$| -lffi|" -e "/^readline/s|$| -ledit -lncurses|" Modules/Setup.local
 '
 }
 

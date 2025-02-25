@@ -278,7 +278,8 @@ jobs:
             ppc64le) X=ppc64el ;;
             *)       X=${{ matrix.target-arch }}
           esac
-          curl -LO https://cdimage.ubuntu.com/ubuntu-base/releases/24.04/release/ubuntu-base-24.04.1-base-$X.tar.gz
+          set -ex
+          curl -LO https://cdimage.ubuntu.com/ubuntu-base/releases/24.04/release/ubuntu-base-24.04.2-base-$X.tar.gz
 
       - run: install -d ubuntu-rootfs
       - run: tar xf ubuntu-base-24.04.1-base-*.tar.gz -C ubuntu-rootfs
