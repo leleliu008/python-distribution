@@ -1049,20 +1049,26 @@ case $NATIVE_PLATFORM_KIND in
     darwin)
         export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
         export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+
+        unset  LIBNSL_CFLAGS
+        unset  LIBNSL_LIBS
         ;;
      linux)
         export LIBUUID_CFLAGS="-I$AUX_INCLUDE_DIR"
         export LIBUUID_LIBS="-L$AUX_LIBRARY_DIR -luuid"
+
+        export LIBNSL_CFLAGS="-I$AUX_INCLUDE_DIR"
+        export LIBNSL_LIBS="-L$AUX_LIBRARY_DIR -lnsl -ltirpc"
         ;;
     *)  unset  LIBUUID_CFLAGS
         unset  LIBUUID_LIBS
+
+        unset  LIBNSL_CFLAGS
+        unset  LIBNSL_LIBS
 esac
 
 export LIBEDIT_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBEDIT_LIBS="-L$AUX_LIBRARY_DIR -ledit -lncurses"
-
-export LIBNSL_CFLAGS="-I$AUX_INCLUDE_DIR"
-export LIBNSL_LIBS="-L$AUX_LIBRARY_DIR -lnsl -ltirpc"
 
 export LIBFFI_CFLAGS="-I$AUX_INCLUDE_DIR"
 export LIBFFI_LIBS="-L$AUX_LIBRARY_DIR -lffi"
