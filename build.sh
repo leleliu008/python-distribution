@@ -1055,6 +1055,17 @@ case $NATIVE_PLATFORM_KIND in
 
         unset  LIBNSL_CFLAGS
         unset  LIBNSL_LIBS
+
+        LDFLAGS2="$LDFLAGS"
+        LDFLAGS=
+
+        for flag in $LDFLAGS
+        do
+            case $flag in
+                -flto)  ;;
+                *)      LDFLAGS="$LDFLAGS $flag"
+            esac
+        done
         ;;
      linux)
         export LIBCRYPT_CFLAGS="-I$AUX_INCLUDE_DIR"

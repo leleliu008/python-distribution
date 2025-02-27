@@ -209,6 +209,8 @@ do
             esac
             ;;
         7F454C46)
+            printf 'ELF: %s\n' "$FILEPATH"
+
             ELFTYPE="$(xxd -u -p -s 16 -l 1 "$FILEPATH")"
 
             [ "$ELFTYPE" = '03' ] || continue
