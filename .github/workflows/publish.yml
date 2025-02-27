@@ -157,7 +157,7 @@ jobs:
 
       - run: curl -LO https://curl.se/ca/cacert.pem
 
-      - uses: cross-platform-actions/action@v0.25.0
+      - uses: cross-platform-actions/action@v0.27.0
         with:
           operating_system: netbsd
           version: ${{ matrix.target-version }}
