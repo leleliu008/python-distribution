@@ -1089,7 +1089,7 @@ case $NATIVE_PLATFORM_KIND in
         unset  LIBNSL_LIBS
 
         # python-3.13
-        gsed -i 's|int clk_id = PyLong_AsInt|long clk_id = PyLong_AsLong|' Modules/timemodule.c
+        gsed -i "s|int clk_id = PyLong_AsInt|long clk_id = PyLong_AsLong|" Modules/timemodule.c
         ;;
     netbsd)
         export LIBCRYPT_CFLAGS="-I$AUX_INCLUDE_DIR"
