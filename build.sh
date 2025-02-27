@@ -1018,7 +1018,7 @@ package_info_python3() {
     PACKAGE_DEP_LIB='libz libbz2 liblzma libgdbm libexpat libsqlite3 libffi libopenssl'
 
     case $NATIVE_PLATFORM_KIND in
-        darwin) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid" ;;
+        darwin) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid libedit" ;;
          linux) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libuuid libnsl libxcrypt libedit" ;;
              *) PACKAGE_DEP_LIB="$PACKAGE_DEP_LIB libedit" ;;
     esac
@@ -1087,6 +1087,9 @@ case $NATIVE_PLATFORM_KIND in
 
         unset  LIBNSL_CFLAGS
         unset  LIBNSL_LIBS
+
+        # python-3.13
+        gsed -i 's|int clk_id = PyLong_AsInt|long clk_id = PyLong_AsLong|' Modules/timemodule.c
         ;;
     netbsd)
         export LIBCRYPT_CFLAGS="-I$AUX_INCLUDE_DIR"
