@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2024-2024 刘富频
+# Copyright (c) 2024-2025 刘富频
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1059,6 +1059,7 @@ case $NATIVE_PLATFORM_KIND in
         LDFLAGS2="$LDFLAGS"
         LDFLAGS=
 
+        # https://github.com/python/cpython/issues/68731
         for flag in $LDFLAGS2
         do
             case $flag in

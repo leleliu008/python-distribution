@@ -209,11 +209,14 @@ do
             esac
             ;;
         7F454C46)
-            ELFTYPE="$(xxd -u -p -s 16 -l 1 "$FILEPATH")"
+            # https://www.sco.com/developers/gabi/latest/ch4.eheader.html
+            ELFTYPE="$(xxd -u -p -s 16 -l 2 "$FILEPATH")"
 
             printf 'ELFTYPE: %s ELFFILE: %s\n' "$ELFTYPE" "$FILEPATH"
 
-            [ "$ELFTYPE" = '03' ] || continue
+            if [ "$ELFTYPE" != '0300' ] && [ "$ELFTYPE" != '0003' ] ; then
+                continue
+            fi
 
             check_DT_NEEDED "$FILEPATH"
 
