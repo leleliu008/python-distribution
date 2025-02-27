@@ -1059,7 +1059,7 @@ case $NATIVE_PLATFORM_KIND in
         LDFLAGS2="$LDFLAGS"
         LDFLAGS=
 
-        for flag in $LDFLAGS
+        for flag in $LDFLAGS2
         do
             case $flag in
                 -flto)  ;;
