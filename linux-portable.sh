@@ -229,7 +229,7 @@ do
             DYNAMICALLY_LINKED_EXECUTABLES="$DYNAMICALLY_LINKED_EXECUTABLES
 $FILEPATH"
 
-            LIBRARY_PATH_RELATIVE_TO_SELF_EXE_PATH="$(realpath -m --relative-to="${FILEPATH%/*}" runtime)"
+            LIBRARY_PATH_RELATIVE_TO_SELF_EXE_PATH="$(realpath -m --relative-to="${FILEPATH%/*}" lib)"
 
             run chmod -x "$FILEPATH"
 
@@ -279,6 +279,8 @@ do
     K="${KV%|*}"
     V="${KV#*|}"
 
+    patchelf --print-needed "$K" > /dev/null || continue
+
     RELATIVE_PATH="$(realpath -m --relative-to="${K%/*}" "$V")"
 
     run patchelf --add-rpath "'\$ORIGIN/$RELATIVE_PATH'" "$K"
@@ -287,17 +289,17 @@ done
 ##################################################################
 
 [ -n "$NEEDED_SYSTEM_SHARED_LIBS" ] && {
-    run install -d runtime/
+    run install -d lib/
 
     for f in $NEEDED_SYSTEM_SHARED_LIBS
     do
-        run cp -L "'$f'" runtime/
+        run cp -L "'$f'" lib/
     done
 }
 
 ##################################################################
 
-run cd runtime/
+run cd lib/
 
 [ -f    "$DYNAMIC_LOADER_FILENAME" ] || {
     case $DYNAMIC_LOADER_FILENAME in
