@@ -339,7 +339,7 @@ jobs:
 
 
   publish:
-    needs: [check, dragonflybsd, midnightbsd freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-loongarch64, linux-x86_64, linux-other]
+    needs: [check, dragonflybsd, midnightbsd, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-loongarch64, linux-x86_64, linux-other]
     if: needs.check.outputs.if-new-release == 'yes'
 
     runs-on: ubuntu-latest
