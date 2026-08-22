@@ -23,7 +23,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id:  check-if-build
         run: |
@@ -41,7 +41,7 @@ jobs:
 
           LATEST_RELEASE_VERSION="$(gh api graphql -f "query=$(cat QUERY)" --jq .data.repository.latestRelease.name)"
 
-          RELEASE_VERSION="$(./build.sh python-version ${{ github.event.inputs.python-edition }})"
+          RELEASE_VERSION="$(./build.sh version ${{ github.event.inputs.python-edition }})"
 
           if [ "$LATEST_RELEASE_VERSION" = "$RELEASE_VERSION" ] ; then
               RELEASE=no
@@ -70,7 +70,7 @@ jobs:
         target-version: ['6.4']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: vmactions/dragonflybsd-vm@v1
         with:
@@ -80,10 +80,37 @@ jobs:
           copyback: true
           run: ./bundle.sh ${{ needs.check.outputs.release-version }} dragonflybsd-${{ matrix.target-version }}-x86_64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-dragonflybsd-${{ matrix.target-version }}-x86_64.tar.xz
+
+
+  midnightbsd:
+    needs: check
+    if: needs.check.outputs.if-new-release == 'yes'
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ['4.0']
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: cross-platform-actions/action@master
+        with:
+          operating_system: midnightbsd
+          version: "${{ matrix.version }}.4"
+          shell: bash
+          run: ./bundle.sh ${{ needs.check.outputs.release-version }} midnightbsd-${{ matrix.target-version }}-amd64
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: python-${{ needs.check.outputs.release-version }}-midnightbsd-${{ matrix.target-version }}-amd64.tar.xz
+          path: python-${{ needs.check.outputs.release-version }}-midnightbsd-${{ matrix.target-version }}-amd64.tar.xz
 
 
   freebsd:
@@ -95,10 +122,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target-version: ['15.0', '14.3', '14.2', '14.1', '14.0', '13.5', '13.4', '13.3', '13.2']
+        target-version: ['15.1', '15.0', '14.4', '14.3', '14.2', '14.1', '14.0', '13.5', '13.4', '13.3', '13.2']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: cross-platform-actions/action@master
         with:
@@ -107,7 +134,7 @@ jobs:
           shell: bash
           run: ./bundle.sh ${{ needs.check.outputs.release-version }} freebsd-${{ matrix.target-version }}-amd64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: python-${{ needs.check.outputs.release-version }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-freebsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -122,11 +149,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #target-version: ['7.6', '7.5', '7.4', '7.3', '7.2']
-        target-version: ['7.8', '7.7', '7.6', '7.5']
+        target-version: ['7.9', '7.8', '7.7', '7.6']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: cross-platform-actions/action@master
         with:
@@ -135,7 +161,7 @@ jobs:
           shell: bash
           run: ./bundle.sh ${{ needs.check.outputs.release-version }} openbsd-${{ matrix.target-version }}-amd64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-openbsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -150,22 +176,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #target-version: ['9.4', '9.3', '9.2']
-        target-version: ['10.1', '10.0', '9.4', '9.3', '9.2']
+        target-version: ['11.0', '10.1', '10.0', '9.4', '9.3', '9.2']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: curl -LO https://curl.se/ca/cacert.pem
 
-      - uses: cross-platform-actions/action@v0.27.0
+      - uses: cross-platform-actions/action@master
         with:
           operating_system: netbsd
           version: ${{ matrix.target-version }}
           shell: bash
           run: ./bundle.sh ${{ needs.check.outputs.release-version }} netbsd-${{ matrix.target-version }}-amd64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-netbsd-${{ matrix.target-version }}-amd64.tar.xz
@@ -186,11 +211,11 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target-version }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: ./bundle.sh ${{ needs.check.outputs.release-version }} macos-${{ matrix.target-version }}-arm64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-arm64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-arm64.tar.xz
@@ -211,11 +236,11 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target-version }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: ./bundle.sh ${{ needs.check.outputs.release-version }} macos-${{ matrix.target-version }}-x86_64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-macos-${{ matrix.target-version }}-x86_64.tar.xz
@@ -228,11 +253,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: ./bundle.sh ${{ needs.check.outputs.release-version }} linux-any-x86_64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-linux-any-x86_64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-linux-any-x86_64.tar.xz
@@ -245,14 +270,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: curl -LO https://raw.githubusercontent.com/alpinelinux/alpine-chroot-install/master/alpine-chroot-install
       - run: chmod +x alpine-chroot-install
       - run: sudo ./alpine-chroot-install -d /alpine -a loongarch64
       - run: /alpine/enter-chroot /bin/sh bundle.sh ${{ needs.check.outputs.release-version }} linux-any-loongarch64
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-linux-any-loongarch64.tar.xz
@@ -270,7 +295,7 @@ jobs:
         target-arch: [aarch64, ppc64le, riscv64, s390x, armhf]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: |
           case ${{ matrix.target-arch }} in
@@ -288,10 +313,12 @@ jobs:
       - run: cp -p /etc/resolv.conf ubuntu-rootfs/etc/
       - run: cp *.sh ubuntu-rootfs/
 
-      - run: sudo mount -o bind  /dev ubuntu-rootfs/dev
       - run: sudo mount -t proc  none ubuntu-rootfs/proc
       - run: sudo mount -t sysfs none ubuntu-rootfs/sys
       - run: sudo mount -t tmpfs none ubuntu-rootfs/tmp
+
+      - run: sudo mount --rbind    /dev ubuntu-rootfs/dev
+      - run: sudo mount --make-rprivate ubuntu-rootfs/dev
 
       - run: sudo apt-get -y update
       - run: sudo apt-get -y install qemu-user-static binfmt-support
@@ -304,7 +331,7 @@ jobs:
 
       - run: mv ubuntu-rootfs/python-${{ needs.check.outputs.release-version }}-linux-any-${{ matrix.target-arch }}.tar.xz .
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: python-${{ needs.check.outputs.release-version }}-linux-any-${{ matrix.target-arch }}.tar.xz
           path: python-${{ needs.check.outputs.release-version }}-linux-any-*.tar.xz
@@ -312,7 +339,7 @@ jobs:
 
 
   publish:
-    needs: [check, dragonflybsd, freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-loongarch64, linux-x86_64, linux-other]
+    needs: [check, dragonflybsd, midnightbsd freebsd, openbsd, netbsd, macos-arm64, macos-x86_64, linux-loongarch64, linux-x86_64, linux-other]
     if: needs.check.outputs.if-new-release == 'yes'
 
     runs-on: ubuntu-latest
@@ -321,9 +348,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: '*'
           path: .

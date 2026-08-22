@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2024-2025 刘富频
+# Copyright (c) 2024-2026 刘富频
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ set -e
 unset IFS
 
 
-COLOR_RED='\033[0;31m'          # Red
-COLOR_GREEN='\033[0;32m'        # Green
-COLOR_YELLOW='\033[0;33m'       # Yellow
-COLOR_BLUE='\033[0;94m'         # Blue
-COLOR_PURPLE='\033[0;35m'       # Purple
-COLOR_OFF='\033[0m'             # Reset
+COLOR_RED='\033[0;31m'
+COLOR_GREEN='\033[0;32m'
+COLOR_YELLOW='\033[0;33m'
+COLOR_BLUE='\033[0;94m'
+COLOR_PURPLE='\033[0;35m'
+COLOR_OFF='\033[0m'
 
 print() {
     printf '%b' "$*"
@@ -767,8 +767,8 @@ EOF
 }
 
 package_info_libz() {
-    PACKAGE_SRC_URL='https://zlib.net/fossils/zlib-1.3.1.tar.gz'
-    PACKAGE_SRC_SHA='9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23'
+    PACKAGE_SRC_URL='https://distfiles.macports.org/zlib/zlib-1.3.2.tar.xz'
+    PACKAGE_SRC_SHA='d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3'
     PACKAGE_INSTALL='configure --static'
 }
 
@@ -792,14 +792,14 @@ package_info_libbz2() {
 }
 
 package_info_libexpat() {
-    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_7_3/expat-2.7.3.tar.lz'
-    PACKAGE_SRC_SHA='4cb8ec847a42d97fe4e9ee4fb516aca79cd41667e13a3982124e11c204bf2b9d'
+    PACKAGE_SRC_URL='https://github.com/libexpat/libexpat/releases/download/R_2_7_4/expat-2.7.4.tar.lz'
+    PACKAGE_SRC_SHA='882bb3c124cdfd6d594818276f3ea851b780473a722385150a5793277635fcae'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --without-xmlwf --without-tests --without-examples --without-docbook'
 }
 
 package_info_liblzma() {
-    PACKAGE_SRC_URL='https://github.com/tukaani-project/xz/releases/download/v5.8.2/xz-5.8.2.tar.gz'
-    PACKAGE_SRC_SHA='ce09c50a5962786b83e5da389c90dd2c15ecd0980a258dd01f70f9e7ce58a8f1'
+    PACKAGE_SRC_URL='https://github.com/tukaani-project/xz/releases/download/v5.8.3/xz-5.8.3.tar.gz'
+    PACKAGE_SRC_SHA='3d3a1b973af218114f4f889bbaa2f4c037deaae0c8e815eec381c3d546b974a0'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-nls --enable-largefile --disable-xz --disable-xzdec --disable-lzmadec --disable-lzmainfo --disable-lzma-links --disable-scripts --disable-doc'
 }
 
@@ -824,8 +824,8 @@ package_info_libffi() {
 }
 
 package_info_libiconv() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libiconv/libiconv-1.18.tar.gz'
-    PACKAGE_SRC_SHA='3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8'
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libiconv/libiconv-1.19.tar.gz'
+    PACKAGE_SRC_SHA='88dd96a8c0464eca144fc791ae60cd31cd8ee78321e67397e25fc095c4a19aa6'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --enable-extra-encodings'
 }
 
@@ -853,8 +853,8 @@ package_info_libnsl() {
 }
 
 package_info_libopenssl() {
-    PACKAGE_SRC_URL='https://github.com/openssl/openssl/releases/download/openssl-3.6.1/openssl-3.6.1.tar.gz'
-    PACKAGE_SRC_SHA='b1bfedcd5b289ff22aee87c9d600f515767ebf45f77168cb6d64f231f518a82e'
+    PACKAGE_SRC_URL='https://github.com/openssl/openssl/releases/download/openssl-3.6.3/openssl-3.6.3.tar.gz'
+    PACKAGE_SRC_SHA='243a86649cf6f23eeb6a2ff2456e09e5d77dd9018a54d3d96b0c6bdd6ba6c7f1'
     PACKAGE_DEP_AUX='perl'
     PACKAGE_DOPATCH='
     case $NATIVE_PLATFORM_ARCH in
@@ -906,16 +906,16 @@ ln -s ncursesw.pc lib/pkgconfig/ncurses.pc'
 }
 
 package_info_libedit() {
-    PACKAGE_SRC_URL='https://thrysoee.dk/editline/libedit-20251016-3.1.tar.gz'
-    PACKAGE_SRC_SHA='21362b00653bbfc1c71f71a7578da66b5b5203559d43134d2dd7719e313ce041'
+    PACKAGE_SRC_URL='https://thrysoee.dk/editline/libedit-20260512-3.1.tar.gz'
+    PACKAGE_SRC_SHA='432d5e7ea8b0116dd39f2eca7bc11d0eed77faa6b77ea526ace89907c23ea4a0'
     PACKAGE_DEP_LIB='libncurses'
     PACKAGE_INSTALL='configure --disable-dependency-tracking --enable-static --disable-shared --disable-examples'
     PACKAGE_DOTWEAK='run ln -s libedit.a lib/libreadline.a'
 }
 
 package_info_libuuid() {
-    PACKAGE_SRC_URL='https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.40/util-linux-2.40.4.tar.xz'
-    PACKAGE_SRC_SHA='5c1daf733b04e9859afdc3bd87cc481180ee0f88b5c0946b16fdec931975fb79'
+    PACKAGE_SRC_URL='https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.42/util-linux-2.42.2.tar.xz'
+    PACKAGE_SRC_SHA='03a05d3adf9602ef128f2da05b84b3205ce60c351e5737c0370f74000679ce8a'
     PACKAGE_DEP_AUX='automake libtool'
     PACKAGE_INSTALL='configure \
         --without-python \
@@ -945,14 +945,14 @@ package_info_libuuid() {
 }
 
 package_info_perl() {
-    PACKAGE_SRC_URL='https://www.cpan.org/src/5.0/perl-5.42.0.tar.xz'
-    PACKAGE_SRC_SHA='73cf6cc1ea2b2b1c110a18c14bbbc73a362073003893ffcedc26d22ebdbdd0c3'
+    PACKAGE_SRC_URL='https://www.cpan.org/src/5.0/perl-5.42.2.tar.xz'
+    PACKAGE_SRC_SHA='0a585eeb9e363c0f80482ddb3571625250c2c86aeb408853e8ea50805cfb14bb'
     PACKAGE_INSTALL='run ./Configure "-Dprefix=$PACKAGE_INSTALL_DIR" -Dman1dir=none -Dman3dir=none -des -Dmake=gmake -Duselargefiles -Duseshrplib -Dusethreads -Dusenm=false -Dusedl=true && run "$GMAKE" "--jobs=$BUILD_NJOBS" && run "$GMAKE" install'
 }
 
 package_info_autoconf() {
-    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/autoconf/autoconf-2.72.tar.gz'
-    PACKAGE_SRC_SHA='afb181a76e1ee72832f6581c0eddf8df032b83e2e0239ef79ebedc4467d92d6e'
+    PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/autoconf/autoconf-2.73.tar.gz'
+    PACKAGE_SRC_SHA='259ddfa3bddc799cfb81489cc0f17dfdf1bd6d1505dda53c0f45ff60d6a4f9a7'
     PACKAGE_DEP_AUX='perl gm4'
     PACKAGE_INSTALL='configure'
 }
@@ -967,7 +967,7 @@ package_info_automake() {
 package_info_libtool() {
     PACKAGE_SRC_URL='https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz'
     PACKAGE_SRC_SHA='f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675'
-    PACKAGE_INSTALL='configure --enable-ltdl-install'
+    PACKAGE_INSTALL='configure --disable-ltdl-install'
     PACKAGE_DEP_AUX='gm4'
     PACKAGE_DOTWEAK='
 run ln -s libtool    bin/glibtool
@@ -996,24 +996,24 @@ package_info_python3() {
             PACKAGE_SRC_SHA='00e07d7c0f2f0cc002432d1ee84d2a40dae404a99303e3f97701c10966c91834'
             ;;
         3.10)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.10.19/Python-3.10.19.tgz'
-            PACKAGE_SRC_SHA='a078fb2d7a216071ebbe2e34b5f5355dd6b6e9b0cd1bacc4a41c63990c5a0eec'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.10.21/Python-3.10.21.tgz'
+            PACKAGE_SRC_SHA='f276987f06270ae6c1fb4da620bd105edf78c31368c2f7e85e6c1d51c560b04b'
             ;;
         3.11)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.14/Python-3.11.14.tgz'
-            PACKAGE_SRC_SHA='563d2a1b2a5ba5d5409b5ecd05a0e1bf9b028cf3e6a6f0c87a5dc8dc3f2d9182'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.11.16/Python-3.11.16.tgz'
+            PACKAGE_SRC_SHA='6c0bd76ab0ec7d94ed400b1497f01ac6c7751c8822615ee0855a3eb2d893ea76'
             ;;
         3.12)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.12/Python-3.12.12.tgz'
-            PACKAGE_SRC_SHA='487c908ddf4097a1b9ba859f25fe46d22ccaabfb335880faac305ac62bffb79b'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.12.14/Python-3.12.14.tgz'
+            PACKAGE_SRC_SHA='6c6df908d2c3fd24e6d76869e92542abd0f33aec9dfc18df8875f89660286d43'
             ;;
         3.13)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.12/Python-3.13.12.tgz'
-            PACKAGE_SRC_SHA='12e7cb170ad2d1a69aee96a1cc7fc8de5b1e97a2bdac51683a3db016ec9a2996'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.13.15/Python-3.13.15.tgz'
+            PACKAGE_SRC_SHA='c28d9d213c09b5b5ab2c29812950e12f746999e099b82894231be954b26baed9'
             ;;
         3.14)
-            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.14.3/Python-3.14.3.tgz'
-            PACKAGE_SRC_SHA='d7fe130d0501ae047ca318fa92aa642603ab6f217901015a1df6ce650d5470cd'
+            PACKAGE_SRC_URL='https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tgz'
+            PACKAGE_SRC_SHA='62859805f6fdf25e2bcbf3fa3217801e1996887ca33e6a2af80674bdfa2dbe07'
             ;;
         *)  abort 1 "unsupported python edition: $PYTHON_EDITION"
     esac
@@ -1264,9 +1264,9 @@ case $1 in
     ''|--help|-h)
         help
         ;;
-    python-version)
+    version)
         shift
-        [ -z "$1" ] && abort 1 '$ARG0 python-version <PYTHON-EDITION>, <PYTHON-EDITION> is unspecified. It can be 3.14, 3.13, 3.12, 3.11, 3.10, 3.9'
+        [ -z "$1" ] && abort 1 '$ARG0 version <PYTHON-EDITION>, <PYTHON-EDITION> is unspecified. It can be 3.14, 3.13, 3.12, 3.11, 3.10, 3.9'
         PYTHON_EDITION="$1"
 
         unset PACKAGE_SRC_URL
